@@ -1,0 +1,13 @@
+server:
+    port: ${PORT:8080}
+spring:
+    datasource:
+        url: ${DB_URL:jdbc:mysql://localhost:3306/iotwatering}
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:Anhquanmysql2004@}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
