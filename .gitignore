@@ -4,3 +4,6 @@
 /iotwatering/.vscode/
 
 /iotwatering/target/
+
+/iotwatering/iotwatering.iml
+/iotwatering/.env
