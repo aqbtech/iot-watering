@@ -1,25 +1,35 @@
-import { CreateSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import authorizedAxios from '../../util/authorizeAxios'
+import { BASE_URL } from '../../util/constant'
 
-initialState = {
+//Định nghĩa initialState đúng cách
+const initialState = {
   currentUser: null
 }
 
-export const userSlice = CreateSlice({
+//API gọi login
+export const loginUserAPI = createAsyncThunk(
+  'user/loginUserAPI',
+  async (data) => {
+    const response = await authorizedAxios.post(`${BASE_URL}/api/login`, data)
+    return response.data
+  }
+)
+
+//Tạo slice đúng cách
+export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    //Reducers: xử lý dữ liệu đồng bộ
-    updateUser: (state, action) => {
-      const fullUser = action.payload
-
-      //xử lý dữ liệu....
-
-      //update lại dữ liệu
-      state.currentUser = fullUser
-    }
+  reducers: {}, // Có thể thêm các reducers khác nếu cần
+  extraReducers: (builder) => {
+    builder.addCase(loginUserAPI.fulfilled, (state, action) => {
+      state.currentUser = action.payload
+    })
   }
 })
 
-export const { updateUser } = userSlice.actions
+//Selector để lấy user hiện tại
+export const selectCurrentUser = (state) => state.user.currentUser
 
-export default userSlice.reducer
+//Xuất reducer đúng cách
+export const userReducer = userSlice.reducer

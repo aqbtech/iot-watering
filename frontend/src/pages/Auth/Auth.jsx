@@ -6,8 +6,8 @@ import { useLocation } from 'react-router-dom'
 
 const Auth = () => {
   const location = useLocation()
-  const isLogin = location.pathname === '/login'
-  const isRegister = location.pathname === '/signup'
+  const isLogin = location.pathname === '/Login'
+  const isRegister = location.pathname === '/Signup'
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex' }}>

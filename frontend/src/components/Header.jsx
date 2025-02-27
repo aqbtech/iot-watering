@@ -37,7 +37,7 @@ const Header = () => {
             <MenuItem component={Link} to="/myProfile" onClick={handleMenuClose}>
               My Profile
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+            <MenuItem component={Link} to='/Login' onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
         </Box>
       </Toolbar>
