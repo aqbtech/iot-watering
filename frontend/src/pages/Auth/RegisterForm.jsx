@@ -46,8 +46,10 @@ const RegisterForm = () => {
 
   const onSubmit = (data) => {
     toast.promise(
-      registerUserAPI(data,
-        { pending: 'Registration is in progress...' })
+      registerUserAPI(data),
+      {
+        pending: 'Registration is in progress...'
+      }
     ).then(user => {
       navigate('/Login')
     })
@@ -122,7 +124,7 @@ const RegisterForm = () => {
         {/* Login Link */}
         <Typography variant="body2" align="center" sx={{ mt: 3 }}>
           Already have an account?{' '}
-          <Typography component={Link} to="/login" color="primary" sx={{ fontWeight: 'bold', textDecoration: 'none', cursor: 'pointer' }}>
+          <Typography component={Link} to="/Login" color="primary" sx={{ fontWeight: 'bold', textDecoration: 'none', cursor: 'pointer' }}>
             Login
           </Typography>
         </Typography>

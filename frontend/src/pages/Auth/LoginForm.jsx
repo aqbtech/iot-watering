@@ -7,7 +7,7 @@ import { FIELD_REQUIRED_MESSAGE, USERNAME_RULE, USERNAME_RULE_MESSAGE, PASSWORD_
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '../../redux/Slices/userSlice.js'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 const LoginForm = () => {
   const [username, setUsername] = useState('')
@@ -16,11 +16,23 @@ const LoginForm = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const validate = () => {
-    let isValid = true
-    let newErrors = { username: '', password: '' }
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (!validate()) return
 
-    if (!username) {
+    toast.promise(
+      dispatch(loginUserAPI({ username, password })),
+      { pending: 'Logging in...' }
+    ).then(res => {
+      if (!res.error) navigate('/')
+    })
+  }
+
+  const validate = () => {
+    let newErrors = { username: '', password: '' }
+    let isValid = true
+
+    if (!username.trim()) {
       newErrors.username = FIELD_REQUIRED_MESSAGE
       isValid = false
     } else if (!USERNAME_RULE.test(username)) {
@@ -28,7 +40,7 @@ const LoginForm = () => {
       isValid = false
     }
 
-    if (!password) {
+    if (!password.trim()) {
       newErrors.password = FIELD_REQUIRED_MESSAGE
       isValid = false
     } else if (!PASSWORD_RULE.test(password)) {
@@ -38,17 +50,6 @@ const LoginForm = () => {
 
     setErrors(newErrors)
     return isValid
-  }
-
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    toast.promise(
-      dispatch(loginUserAPI({ username: username, password: password })),
-      { pending: 'logging in...' }
-    ).then(res => {
-      console.log(res)
-      if (!res.error) navigate('/')
-    })
   }
 
   return (

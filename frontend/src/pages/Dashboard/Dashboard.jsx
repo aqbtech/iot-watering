@@ -54,7 +54,7 @@ const Dashboard = () => {
             }}
             onClick={() => console.log('Toggled device')}
           >
-            BẬT / TẮT THIẾT BỊ
+            ON
           </Button>
           <Box
             sx={{

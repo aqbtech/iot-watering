@@ -1,9 +1,10 @@
 import authorizedAxios from '../util/authorizeAxios'
 import { BASE_URL } from '../util/constant'
+import { toast } from 'react-toastify'
 
 export const registerUserAPI = async (data) => {
   const response = await authorizedAxios.post(
-    `${API_ROOT}/v1/users/register`,
+    `${BASE_URL}/user/v1/register`,
     data
   )
   toast.success('Account created successfully!')
