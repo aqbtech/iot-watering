@@ -32,6 +32,8 @@ public class GuestServiceImpl implements GuestService {
 				.email(userRegister.getEmail())
 				.firstName(userRegister.getFirstName())
 				.lastName(userRegister.getLastName())
+				.phone(userRegister.getPhone())
+				.dob(userRegister.getDob())
 				.build();
 		try {
 			// Lưu và flush đối tượng vào database
