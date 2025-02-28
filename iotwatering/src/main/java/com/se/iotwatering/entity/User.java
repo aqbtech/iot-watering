@@ -1,9 +1,11 @@
 package com.se.iotwatering.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Past;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,8 @@ public class User {
 	private String email;
 	private String firstName;
 	private String lastName;
+	private String phone;
+	private LocalDate dob;
 
 	@OneToMany(mappedBy = "user")
 	private List<IrrigationSchedule> schedules;
@@ -40,6 +44,8 @@ public class User {
 		this.email = builder.email;
 		this.firstName = builder.firstName;
 		this.lastName = builder.lastName;
+		this.dob = builder.dob;
+		this.phone = builder.phone;
 		this.schedules = builder.schedules != null ? builder.schedules : new ArrayList<>();
 	}
 
@@ -56,7 +62,17 @@ public class User {
 		private String email;
 		private String firstName;
 		private String lastName;
+		private String phone;
+		private LocalDate dob;
 		private List<IrrigationSchedule> schedules;
+		public Builder dob(LocalDate dob) {
+			this.dob = dob;
+			return this;
+		}
+		public Builder phone(String phone) {
+			this.phone = phone;
+			return this;
+		}
 
 		public Builder userId(long userId) {
 			this.userId = userId;

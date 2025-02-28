@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,6 +17,7 @@ public class SensorData {
 	private String humidity;
 	private String light;
 	private int temperature;
+	private LocalDate measuredTime;
 
 	@ManyToOne
 	@JoinColumn(name = "sensor_id", referencedColumnName = "sensorId")
