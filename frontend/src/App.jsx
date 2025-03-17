@@ -17,7 +17,7 @@ function App() {
   const currentUser = useSelector(selectCurrentUser)
 
   return (
-    <div className="bg-[#EEEEEE]" style={{ height: '100vh' }}>
+    <div className="bg-[#EEEEEE]" style={{ minHeight: '100vh' }}>
       <div>
         <ToastContainer />
         <Routes>

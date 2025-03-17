@@ -10,3 +10,12 @@ export const registerUserAPI = async (data) => {
   toast.success('Account created successfully!')
   return response.data
 }
+
+export const refreshTokenAPI = async (token) => {
+  const data = { token: token }
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/auth/refresh`,
+    data
+  )
+  return response.data
+}

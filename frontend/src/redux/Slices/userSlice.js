@@ -16,20 +16,38 @@ export const loginUserAPI = createAsyncThunk(
   }
 )
 
+export const logoutUserAPI = createAsyncThunk(
+  'user/logoutUserAPI',
+  async (token) => {
+    const data = { token: token }
+    const response = await authorizedAxios.post(`${BASE_URL}/auth/logout`, data)
+    return response.data
+  }
+)
+
 //Tạo slice đúng cách
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {}, // Có thể thêm các reducers khác nếu cần
+  reducers: {
+    updateCurrentUser: (state, action) => {
+      state.currentUser = action.payload
+    }
+  }, // Có thể thêm các reducers khác nếu cần
   extraReducers: (builder) => {
     builder.addCase(loginUserAPI.fulfilled, (state, action) => {
-      state.currentUser = action.payload
+      state.currentUser = action.payload.result
+    })
+    builder.addCase(logoutUserAPI.fulfilled, (state) => {
+      state.currentUser = null
     })
   }
 })
 
 //Selector để lấy user hiện tại
-export const selectCurrentUser = (state) => state.user.currentUser
+export const selectCurrentUser = (state) => {
+  return state.user.currentUser
+}
 
 //Xuất reducer đúng cách
 export const userReducer = userSlice.reducer
