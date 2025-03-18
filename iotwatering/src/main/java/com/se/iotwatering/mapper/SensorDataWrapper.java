@@ -9,4 +9,5 @@ public class SensorDataWrapper {
 	public List<List<Object>> humidity;
 	public List<List<Object>> light;
 	public List<List<Object>> temperature;
+	public List<List<Object>> soil;
 }

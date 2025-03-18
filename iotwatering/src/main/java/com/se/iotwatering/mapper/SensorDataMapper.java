@@ -3,12 +3,17 @@ package com.se.iotwatering.mapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.se.iotwatering.dto.SensorData;
+import com.se.iotwatering.util.PaginationUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -67,5 +72,60 @@ public class SensorDataMapper {
 			log.error("Error when mapping response to SensorData: {}", e.getMessage());
 		}
 		return sensorData;
+	}
+	/**
+	 * Chuyển từ response JSON sang Page<SensorData>.
+	 * Các mảng "temperature", "humidity", "light" (và tùy chọn "soil") được giả sử là song song (cùng số lượng phần tử)
+	 */
+	public Page<SensorData> mapResponseToSensorDataPage(String jsonResponse, Pageable pageable) {
+		List<SensorData> sensorDataList = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			JsonNode root = mapper.readTree(jsonResponse);
+
+			JsonNode tempArray = root.get("temperature");
+			JsonNode humArray = root.get("humidity");
+			JsonNode lightArray = root.get("light");
+			JsonNode soilArray = root.get("soil");
+
+			if (tempArray != null && tempArray.isArray()) {
+				int length = tempArray.size();
+				for (int i = 0; i < length; i++) {
+					SensorData sensorData = new SensorData();
+
+					JsonNode tempNode = tempArray.get(i);
+					sensorData.setTemperature(Integer.parseInt(tempNode.get("value").asText()));
+					long maxTs = tempNode.get("ts").asLong();
+
+					if (humArray != null && humArray.size() > i) {
+						JsonNode humNode = humArray.get(i);
+						sensorData.setHumidity(humNode.get("value").asText());
+						maxTs = Math.max(maxTs, humNode.get("ts").asLong());
+					}
+
+					if (lightArray != null && lightArray.size() > i) {
+						JsonNode lightNode = lightArray.get(i);
+						sensorData.setLight(lightNode.get("value").asText());
+						maxTs = Math.max(maxTs, lightNode.get("ts").asLong());
+					}
+
+					if (soilArray != null && soilArray.size() > i) {
+						JsonNode soilNode = soilArray.get(i);
+						sensorData.setSoilMoisture(soilNode.get("value").asText());
+						maxTs = Math.max(maxTs, soilNode.get("ts").asLong());
+					}
+
+					LocalDateTime measuredTime = Instant.ofEpochMilli(maxTs)
+							.atZone(ZoneId.systemDefault())
+							.toLocalDateTime();
+					sensorData.setMeasuredTime(measuredTime);
+
+					sensorDataList.add(sensorData);
+				}
+			}
+		} catch (Exception e) {
+			log.error("Error mapping response to SensorData Page: {}", e.getMessage());
+		}
+		return PaginationUtils.convertListToPage(sensorDataList, pageable);
 	}
 }
