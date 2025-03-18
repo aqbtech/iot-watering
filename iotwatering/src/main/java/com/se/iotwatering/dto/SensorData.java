@@ -15,7 +15,7 @@ public class SensorData {
 	@JsonProperty("Light")
 	private String light;
 	@JsonProperty("Temperature")
-	private int temperature;
+	private String temperature;
 	@JsonProperty("updatedTime")
 	private LocalDateTime measuredTime;
 }

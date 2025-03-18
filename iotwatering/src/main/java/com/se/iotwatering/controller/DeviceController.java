@@ -1,13 +1,17 @@
 package com.se.iotwatering.controller;
 
+import com.se.iotwatering.dto.DeviceInfo;
 import com.se.iotwatering.dto.SensorData;
 import com.se.iotwatering.dto.http.response.ResponseAPITemplate;
+import com.se.iotwatering.entity.Sensor;
+import com.se.iotwatering.service.DeviceControllerService;
 import com.se.iotwatering.service.TelemetryService;
 import com.se.iotwatering.service.WebSocketClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -18,6 +22,7 @@ import java.io.IOException;
 public class DeviceController {
 	@Autowired
 	private WebSocketClient wsClient;
+	private final DeviceControllerService deviceControllerService;
 
 	@GetMapping("/subscribe")
 	public ResponseAPITemplate<?> subDevice(@RequestParam("dvcId") String deviceId) {
@@ -33,18 +38,26 @@ public class DeviceController {
 	}
 
 	@GetMapping("/list-device")
-	public ResponseAPITemplate<Page<?>> listDevice(@AuthenticationPrincipal String jwt,
+	public ResponseAPITemplate<Page<DeviceInfo>> listDevice(@AuthenticationPrincipal Jwt jwt,
 												   @RequestParam("page") int page,
 												   @RequestParam("size") int size) {
 		//TODO: Get list device
-		return new ResponseAPITemplate<>();
+		Page<DeviceInfo> dvcs = deviceControllerService.listDevice(page, size);
+		return ResponseAPITemplate.<Page<DeviceInfo>>builder()
+				.result(dvcs)
+				.build();
 	}
 
 	@PostMapping("/trigger")
-	public ResponseAPITemplate<?> triggerDevice(@RequestParam("dvcId") String deviceId, @RequestParam("duration") int duration) {
-		//TODO: Trigger device
+	public ResponseAPITemplate<?> triggerDevice(@RequestParam("dvcId") long deviceId,
+												@RequestParam(value = "duration", required = false) String duration) {
 		return ResponseAPITemplate.<String>builder()
-				.result("Triggered device")
+				.result(deviceControllerService.triggerPump(deviceId))
+				.build();
+	}@GetMapping("/detail")
+	public ResponseAPITemplate<?> triggerDevice(@RequestParam("dvcId") long deviceId) {
+		return ResponseAPITemplate.<Sensor>builder()
+				.result(deviceControllerService.getDeviceById(deviceId))
 				.build();
 	}
 

@@ -27,7 +27,7 @@ public class SensorDataMapper {
 			// Lấy giá trị Temperature
 			if (root.has("temperature") && root.get("temperature").isArray() && !root.get("temperature").isEmpty()) {
 				JsonNode tempNode = root.get("temperature").get(0);
-				sensorData.setTemperature(Integer.parseInt(tempNode.get("value").asText()));
+				sensorData.setTemperature(tempNode.get("value").asText());
 			}
 
 			// Lấy giá trị Humidity
@@ -94,7 +94,7 @@ public class SensorDataMapper {
 					SensorData sensorData = new SensorData();
 
 					JsonNode tempNode = tempArray.get(i);
-					sensorData.setTemperature(Integer.parseInt(tempNode.get("value").asText()));
+					sensorData.setTemperature(tempNode.get("value").asText());
 					long maxTs = tempNode.get("ts").asLong();
 
 					if (humArray != null && humArray.size() > i) {
