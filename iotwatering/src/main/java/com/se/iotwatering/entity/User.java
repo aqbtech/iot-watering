@@ -1,7 +1,6 @@
 package com.se.iotwatering.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Past;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +14,8 @@ import java.util.List;
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User {
-
-	// Các getter và setter (có thể tự generate nếu cần)
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
 	@Column(nullable = false, unique = true)
 	private String username;
@@ -65,10 +63,12 @@ public class User {
 		private String phone;
 		private LocalDate dob;
 		private List<IrrigationSchedule> schedules;
+
 		public Builder dob(LocalDate dob) {
 			this.dob = dob;
 			return this;
 		}
+
 		public Builder phone(String phone) {
 			this.phone = phone;
 			return this;

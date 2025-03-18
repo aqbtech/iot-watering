@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -14,6 +15,8 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +26,8 @@ public class WebSocketClient extends TextWebSocketHandler {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private WebSocketSession session;
 	private CoreIotConfig coreIotConfig;
+	private List<DataObserver> observers = new ArrayList<>();
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	protected void setCoreIotConfig(CoreIotConfig coreIotConfig) {
@@ -65,12 +70,15 @@ public class WebSocketClient extends TextWebSocketHandler {
 								"entityType", "DEVICE",
 								"entityId", entityId,
 								"scope", "LATEST_TELEMETRY",
-								"keys", "temperature,humidity",
+								"keys", "temperature,humidity,light,soil",
 								"type", "TIMESERIES"
 						)
 				}
 		);
 		sendMessage(subscriptionCmd);
+		if (!observers.contains(HandlerDataWare.class)) {
+			addObserver(applicationContext.getBean(HandlerDataWare.class));
+		}
 	}
 
 	private void sendMessage(Map<String, Object> message) throws IOException {
@@ -84,12 +92,22 @@ public class WebSocketClient extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) throws Exception {
+		// TODO: Handle received message
 		log.info("Received data: {}", message.getPayload());
-		// Nếu nhận được lỗi "JWT_EXPIRED", cần reconnect
+		// Nếu nhận được lỗi "JWT_EXPIRED" do token het han, cần reconnect
 		if (message.getPayload().contains("JWT_EXPIRED")) {
 			log.warn("JWT token expired. Reconnecting...");
 			reconnect();
 		}
+		notifyObservers(message.getPayload());
+	}
+
+	public void addObserver(DataObserver observer) {
+		observers.add(observer);
+	}
+
+	private void notifyObservers(String payload) {
+		observers.forEach(observer -> observer.onMessage(payload));
 	}
 
 	@Override
@@ -119,5 +137,10 @@ public class WebSocketClient extends TextWebSocketHandler {
 			log.error("Error closing WebSocket session: {}", e.getMessage());
 		}
 		retryConnect();
+	}
+
+	@Autowired
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 }

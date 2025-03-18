@@ -9,13 +9,11 @@ import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -23,8 +21,8 @@ import java.util.List;
 @RequestMapping("/user/v1")
 @RequiredArgsConstructor
 public class UserController {
-	private WebSocketClient webSocketClient;
 	private final GuestService guestService;
+	private WebSocketClient webSocketClient;
 
 	@PostMapping("/register")
 	public ResponseAPITemplate<?> register(@Valid @RequestBody UserRegister userRegister, BindingResult bindingResult) {
@@ -44,16 +42,5 @@ public class UserController {
 	@GetMapping("/dashboard")
 	public ResponseEntity<?> dashboard(ServletRequest request) {
 		return ResponseEntity.ok().build();
-	}
-	@Autowired
-	private WebSocketClient wsClient;
-	@GetMapping("/send")
-	public String sendMessage(@RequestParam String message) {
-		try {
-			wsClient.subscribeToDevice(message);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return "Sent";
 	}
 }
