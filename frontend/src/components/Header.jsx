@@ -1,10 +1,18 @@
 import React, { useState } from 'react'
 import { AppBar, Toolbar, IconButton, Typography, Box, Menu, MenuItem } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/asset'
+import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { logoutUserAPI } from '../redux/Slices/userSlice'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '../redux/Slices/userSlice'
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const currentUser = useSelector(selectCurrentUser)
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -12,6 +20,16 @@ const Header = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleLogout = () => {
+    toast.promise(dispatch(logoutUserAPI(currentUser.token)), {
+      pending: 'Logging out...'
+    }).then(err => {
+      if (!err) {
+        navigate('/login')
+      }
+    })
   }
 
   return (
@@ -37,7 +55,7 @@ const Header = () => {
             <MenuItem component={Link} to="/myProfile" onClick={handleMenuClose}>
               My Profile
             </MenuItem>
-            <MenuItem component={Link} to='/Login' onClick={handleMenuClose}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </Menu>
         </Box>
       </Toolbar>
