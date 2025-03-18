@@ -6,6 +6,8 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store.js'
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistStore } from 'redux-persist'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const persistor = persistStore(store)
 
@@ -14,10 +16,13 @@ import { injectStore } from './util/authorizeAxios.js'
 injectStore(store)
 
 createRoot(document.getElementById('root')).render(
+
   <BrowserRouter>
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <App />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <App />
+        </LocalizationProvider>
       </PersistGate>
     </Provider>
   </BrowserRouter>

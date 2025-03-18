@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import authorizedAxios from '../../util/authorizeAxios'
 import { BASE_URL } from '../../util/constant'
+import { axiosPublic } from '../../util/authorizeAxios'
 
 //Định nghĩa initialState đúng cách
 const initialState = {
@@ -11,7 +12,7 @@ const initialState = {
 export const loginUserAPI = createAsyncThunk(
   'user/loginUserAPI',
   async (data) => {
-    const response = await authorizedAxios.post(`${BASE_URL}/auth/token`, data)
+    const response = await axiosPublic.post(`${BASE_URL}/auth/token`, data)
     return response.data
   }
 )

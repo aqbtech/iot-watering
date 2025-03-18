@@ -23,7 +23,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute user={currentUser}/>}>
             <Route path='/' element={<HomePage/>}/>
-            <Route path='/Dashboard/:DashboardId' element={<Dashboard/>}/>
+            <Route path='/Dashboard/:deviceId' element={<Dashboard/>}/>
           </Route>
           <Route path='/Signup' element={<Auth/>}/>
           <Route path='/Login' element={<Auth/>}/>

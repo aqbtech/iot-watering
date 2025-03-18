@@ -15,6 +15,12 @@ export const injectStore = (mainStore) => {
   axiosReduxStore = mainStore
 }
 
+export const axiosPublic = axios.create({
+  baseURL: BASE_URL,
+  timeout: 1000 * 60 * 10
+})
+axiosPublic.defaults.withCredentials = false
+
 let authorizedAxios = axios.create({})
 
 authorizedAxios.defaults.timeout = 1000 * 60 * 10 //10 min
@@ -41,37 +47,29 @@ authorizedAxios.interceptors.response.use(
   },
   (error) => {
     const currentToken = axiosReduxStore.getState().user.currentUser?.token
-    if (error.response.status === 401 && currentToken) {
-      try {
-        const refreshToken = currentToken // Sử dụng token hiện tại như refresh token
-        const body = { refreshToken: refreshToken }
+    if (error.response?.status === 401 && currentToken) {
+      const refreshToken = currentToken // Sử dụng token hiện tại như refresh token
 
-        // Gọi đến endpoint /refresh để lấy token mới
-        const res = authorizedAxios.post('/auth/refresh', body)
-        const newAccessToken = res.data.result.token
+      // Gọi đến endpoint /refresh để lấy token mới
+      const res = refreshTokenAPI(refreshToken)
+      const newAccessToken = res.data.result.token
 
-        if (newAccessToken) {
-          //cập nhật lại redux
-          const currentUser = axiosReduxStore.getState().user.currentUser
-          axiosReduxStore.dispatch(
-            updateCurrentUser({ ...currentUser, token: newAccessToken })
-          )
+      if (newAccessToken) {
+        //cập nhật lại redux
+        const currentUser = axiosReduxStore.getState().user.currentUser
+        axiosReduxStore.dispatch(
+          updateCurrentUser({ ...currentUser, token: newAccessToken })
+        )
 
-          // Lưu token mới vào cookie và cập nhật lại header cho request gốc
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+        // Lưu token mới vào cookie và cập nhật lại header cho request gốc
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 
-          // Gọi lại request gốc với token mới
-          return authorizedAxios(originalRequest)
-        } else {
-          throw new Error('Không lấy được token mới.')
-        }
-      } catch (error) {
-        axiosReduxStore.dispatch(logoutUserAPI())
-        toast.error('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.')
-        return Promise.reject(refreshError)
+        // Gọi lại request gốc với token mới
+        return authorizedAxios(originalRequest)
+      } else {
+        throw new Error('Không lấy được token mới.')
       }
     }
-
     //bắt lỗi tập trung
     let errorMessage = error?.message
     if (error.response?.data?.message) {

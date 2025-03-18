@@ -12,7 +12,7 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const currentUser = useSelector(selectCurrentUser) 
+  const currentUser = useSelector(selectCurrentUser)
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -24,10 +24,9 @@ const Header = () => {
 
   const handleLogout = () => {
     toast.promise(dispatch(logoutUserAPI(currentUser.token)), {
-      pending: 'Logging out...',
-      success: 'Logged out successfully!'
+      pending: 'Logging out...'
     }).then(err => {
-      if(!err) {
+      if (!err) {
         navigate('/login')
       }
     })

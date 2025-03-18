@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
+import authorizedAxios from '../../util/authorizeAxios'
 import { BASE_URL } from '../../util/constant'
 //khởi tạo giá trị state của 1 slice trong redux
 
@@ -9,10 +10,11 @@ const initialState = {
 
 export const fetchDetailDashboard = createAsyncThunk(
   'activeDashboard/fetchDetailDashboard',
-  async (dashboardId) => {
-    // Lấy dữ liệu từ server
-    const response = await axios.get(`/api/dashboard/${dashboardId}`)
-    return response.data
+  async (deviceId) => {
+    const response = await authorizedAxios.get(
+      `${BASE_URL}/device/v1/detail?dvcId=${deviceId}`
+    )
+    return response.data.result
   }
 )
 
@@ -20,33 +22,30 @@ export const activeDashboardSlice = createSlice({
   name: 'activeDashboard',
   initialState,
   reducers: {
-    //Reducers: xử lý dữ liệu đồng bộ
     updateCurrentActiveDashboard: (state, action) => {
-      const fullDashboard = action.payload
-
-      //xử lý dữ liệu....
-
-      //update lại dữ liệu
-      state.currentDashboard = fullDashboard
+      state.currentDashboard = action.payload
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchDetailDashboard.fulfilled, (state, action) => {
-      // xử lý dữ liệu khi gọi API thành công, action.payload là dữ liệu trả về từ hàm trên
-      const fullDashboard = action.payload
+    builder
+      // .addCase(fetchDetailDashboard.fulfilled, (state, action) => {
+      //   // xử lý dữ liệu khi gọi API thành công, action.payload là dữ liệu trả về từ hàm trên
+      //   const fullDashboard = action.payload
 
-      //xử lý dữ liệu....
+      //   //xử lý dữ liệu....
 
-      //update lại dữ liệu
-      state.currentDashboard = fullDashboard
-    })
+      //   //update lại dữ liệu
+      //   state.currentDashboard = fullDashboard
+      // })
+      .addCase(fetchDetailDashboard.fulfilled, (state, action) => {
+        state.currentDashboard = { ...action.payload, data: null } // Ban đầu data = null
+      })
   }
 })
 
 export const { updateCurrentActiveDashboard } = activeDashboardSlice.actions
 
-export const selectedCurrentActiveDashboard = (state) => {
-  return state.activeDashboard.currentDashboard
-}
+export const selectedCurrentActiveDashboard = (state) =>
+  state.activedashboard.currentDashboard
 
 export const activeDashboardReducer = activeDashboardSlice.reducer
