@@ -54,7 +54,8 @@ public class DeviceController {
 		return ResponseAPITemplate.<String>builder()
 				.result(deviceControllerService.triggerPump(deviceId))
 				.build();
-	}@GetMapping("/detail")
+	}
+	@GetMapping("/detail")
 	public ResponseAPITemplate<?> triggerDevice(@RequestParam("dvcId") long deviceId) {
 		return ResponseAPITemplate.<Sensor>builder()
 				.result(deviceControllerService.getDeviceById(deviceId))

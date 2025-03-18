@@ -23,4 +23,9 @@ public class Sensor {
 	private Configuration configuration;
 	@OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SensorData> dataRecords = new ArrayList<>();
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_sensor",
+			joinColumns = @JoinColumn(name = "sensor_id", referencedColumnName = "sensorId"),
+			inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userId"))
+	private List<User> users;
 }

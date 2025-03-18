@@ -28,6 +28,8 @@ public class User {
 
 	@OneToMany(mappedBy = "user")
 	private List<IrrigationSchedule> schedules;
+	@ManyToMany(mappedBy = "users")
+	private List<Sensor> sensors;
 
 	// Constructor không đối số phải là protected để JPA có thể sử dụng.
 	protected User() {
