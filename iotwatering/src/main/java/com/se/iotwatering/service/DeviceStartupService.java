@@ -31,9 +31,9 @@ public class DeviceStartupService {
 		List<Sensor> devices = deviceRepository.findAll();
 		System.out.println("Tìm thấy " + devices.size() + " thiết bị trong database.");
 
-		System.out.println("Subscribing device: " +"2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
+		System.out.println("Subscribing device: " +"3a02d0b0-e606-11ef-87b5-21bccf7d29d5");
 		try {
-			webSocketService.subscribeToDevice("2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
+			webSocketService.subscribeToDevice("3a02d0b0-e606-11ef-87b5-21bccf7d29d5");
 		} catch (IOException e) {
 			throw new WebServerException(ErrorCode.UNKNOWN_ERROR);
 		}
