@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.se.iotwatering.config.CoreIotConfig;
 import com.se.iotwatering.dto.DeviceInfo;
 import com.se.iotwatering.dto.SensorData;
+import com.se.iotwatering.dto.SensorDetailResponse;
 import com.se.iotwatering.entity.Sensor;
 import com.se.iotwatering.exception.ErrorCode;
 import com.se.iotwatering.exception.WebServerException;
@@ -45,7 +46,7 @@ public class DeviceControllerService {
 			//  }
 			//]
 			if (root.isArray() && !root.isEmpty()) {
-				JsonNode fanControlNode = root.get(0);
+				JsonNode fanControlNode = root.get(root.size() -1);
 				if (fanControlNode.get("value").asInt() == 1) {
 					Map<String, Object> body = Map.of("fanControl", 0);
 					return coreIotRestClient.sendRequest("POST", uri, null, body);
@@ -58,10 +59,32 @@ public class DeviceControllerService {
 		}
 	}
 
-	public Sensor getDeviceById(long deviceId) {
-		return sensorRepo.findById(deviceId)
-				.orElseThrow(() -> new WebServerException(ErrorCode.DEVICE_NOT_FOUND)
-		);
+	public SensorDetailResponse getDeviceById(long deviceId) {
+		Sensor sensor = sensorRepo.findById(deviceId)
+				.orElseThrow(() -> new WebServerException(ErrorCode.DEVICE_NOT_FOUND));
+		String nuri = "https://" + coreIotConfig.getConfig().get("url") + "/api/plugins/telemetry/DEVICE/" + sensor.getPureSensorId() + "/values/attributes";
+		Map<String, Object> queryParams = new LinkedHashMap<>();
+		queryParams.put("keys", "fanControl");
+		String nowState = coreIotRestClient.sendRequest("GET", nuri, queryParams, null);
+		SensorDetailResponse sensorDetailResponse = new SensorDetailResponse();
+		sensorDetailResponse.setName(sensor.getName());
+		sensorDetailResponse.setLocation(sensor.getLocation());
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			JsonNode root = mapper.readTree(nowState);
+			if (root.isArray() && !root.isEmpty()) {
+				JsonNode fanControlNode = root.get(root.size() - 1);
+				int fanControlValue = fanControlNode.get("value").asInt(); // Lấy giá trị "value"
+				if (fanControlValue == 1) {
+					sensorDetailResponse.setStatus("active"); // Chuyển về String nếu cần
+				} else {
+					sensorDetailResponse.setStatus("inactive");
+				}
+			}
+		} catch (Exception e) {
+			throw new WebServerException(ErrorCode.DEVICE_NOT_FOUND);
+		}
+		return sensorDetailResponse;
 	}
 
 	public Page<DeviceInfo> listDevice(int page, int size) {

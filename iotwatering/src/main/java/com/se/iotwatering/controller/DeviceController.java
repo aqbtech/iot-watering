@@ -2,6 +2,7 @@ package com.se.iotwatering.controller;
 
 import com.se.iotwatering.dto.DeviceInfo;
 import com.se.iotwatering.dto.SensorData;
+import com.se.iotwatering.dto.SensorDetailResponse;
 import com.se.iotwatering.dto.http.response.ResponseAPITemplate;
 import com.se.iotwatering.entity.Sensor;
 import com.se.iotwatering.service.DeviceControllerService;
@@ -56,8 +57,8 @@ public class DeviceController {
 				.build();
 	}
 	@GetMapping("/detail")
-	public ResponseAPITemplate<?> triggerDevice(@RequestParam("dvcId") long deviceId) {
-		return ResponseAPITemplate.<Sensor>builder()
+	public ResponseAPITemplate<SensorDetailResponse> triggerDevice(@RequestParam("dvcId") long deviceId) {
+		return ResponseAPITemplate.<SensorDetailResponse>builder()
 				.result(deviceControllerService.getDeviceById(deviceId))
 				.build();
 	}

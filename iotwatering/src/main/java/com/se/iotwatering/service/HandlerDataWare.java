@@ -48,7 +48,7 @@ public class HandlerDataWare implements DataObserver {
 			SensorData sensorData = new SensorData();
 			sensorData.setHumidity(sensorPayload.data.humidity.getFirst().get(1).toString());
 			sensorData.setLight(sensorPayload.data.light.getFirst().get(1).toString());
-			sensorData.setTemperature(Integer.parseInt(sensorPayload.data.temperature.getFirst().get(1).toString()));
+			sensorData.setTemperature(sensorPayload.data.temperature.getFirst().get(1).toString());
 			sensorData.setSoilMoisture(sensorPayload.data.soil.getFirst().get(1).toString());
 			// Lấy timestamp mới nhất từ latestValues
 			long timestamp = sensorPayload.latestValues.get("temperature"); // Chọn 1 timestamp làm chuẩn

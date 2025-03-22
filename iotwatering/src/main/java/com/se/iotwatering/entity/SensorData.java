@@ -17,7 +17,7 @@ public class SensorData {
 	private String soilMoisture;
 	private String humidity;
 	private String light;
-	private int temperature;
+	private String temperature;
 	private LocalDateTime measuredTime;
 
 	@ManyToOne
