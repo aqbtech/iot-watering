@@ -45,6 +45,8 @@ export const userSlice = createSlice({
   }
 })
 
+export const { updateCurrentUser } = userSlice.actions
+
 //Selector để lấy user hiện tại
 export const selectCurrentUser = (state) => {
   return state.user.currentUser

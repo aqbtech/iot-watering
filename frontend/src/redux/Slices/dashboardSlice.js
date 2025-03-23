@@ -2,8 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import authorizedAxios from '../../util/authorizeAxios'
 import { BASE_URL } from '../../util/constant'
-//khởi tạo giá trị state của 1 slice trong redux
 
+//khởi tạo giá trị state của 1 slice trong redux
 const initialState = {
   currentDashboard: null
 }
@@ -24,6 +24,9 @@ export const activeDashboardSlice = createSlice({
   reducers: {
     updateCurrentActiveDashboard: (state, action) => {
       state.currentDashboard = action.payload
+    },
+    updateState: (state, action) => {
+      state.currentDashboard.status = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -43,7 +46,7 @@ export const activeDashboardSlice = createSlice({
   }
 })
 
-export const { updateCurrentActiveDashboard } = activeDashboardSlice.actions
+export const { updateCurrentActiveDashboard, updateState} = activeDashboardSlice.actions
 
 export const selectedCurrentActiveDashboard = (state) =>
   state.activedashboard.currentDashboard

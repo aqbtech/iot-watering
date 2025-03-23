@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { logoutUserAPI } from '../redux/Slices/userSlice'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '../redux/Slices/userSlice'
+import { selectCurrentUser, updateCurrentUser} from '../redux/Slices/userSlice'
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -25,10 +25,9 @@ const Header = () => {
   const handleLogout = () => {
     toast.promise(dispatch(logoutUserAPI(currentUser.token)), {
       pending: 'Logging out...'
-    }).then(err => {
-      if (!err) {
-        navigate('/login')
-      }
+    }).finally(() => {
+      dispatch(updateCurrentUser(null))
+      navigate('/Login')
     })
   }
 
