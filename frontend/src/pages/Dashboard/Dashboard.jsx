@@ -8,7 +8,7 @@ import HistoryTable from '../../components/HistoryTable'
 import Header from '../../components/Header'
 import PageLoadingSpinner from '../../components/PageLoadingSpinner'
 import { useEffect, useState } from 'react'
-import { selectedCurrentActiveDashboard, fetchDetailDashboard } from '../../redux/Slices/dashboardSlice'
+import { selectedCurrentActiveDashboard, fetchDetailDashboard, updateState } from '../../redux/Slices/dashboardSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import DataField from './DataField'
@@ -32,10 +32,9 @@ const Dashboard = () => {
 
   const handleToggleDevice = async () => {
     const response = await triggerAPI(deviceId)
-    console.log('123', response)
+    dispatch(updateState(dashboard.status === 'active' ? 'inactive' : 'active'))
     return response
   }
-
 
   return (
     <>

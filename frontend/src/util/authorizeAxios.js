@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { logoutUserAPI } from '../redux/Slices/userSlice'
+import { updateCurrentUser } from '../redux/Slices/userSlice'
 import { refreshTokenAPI } from '../apis/deviceApi'
 import { BASE_URL } from '../util/constant'
 
@@ -13,6 +13,10 @@ import { BASE_URL } from '../util/constant'
 let axiosReduxStore
 export const injectStore = (mainStore) => {
   axiosReduxStore = mainStore
+}
+
+const redirectToLogin = () => {
+    window.location.href = '/Login'
 }
 
 export const axiosPublic = axios.create({
@@ -42,45 +46,58 @@ authorizedAxios.interceptors.request.use(
 
 // đánh chặn khi nhận response
 authorizedAxios.interceptors.response.use(
-  (response) => {
-    return response
-  },
-  (error) => {
-    const currentToken = axiosReduxStore.getState().user.currentUser?.token
-    if (error.response?.status === 401 && currentToken) {
-      const refreshToken = currentToken // Sử dụng token hiện tại như refresh token
+    (response) => {
+      return response
+    },
+    (error) => {
+      const currentToken = axiosReduxStore.getState().user.currentUser?.token
 
-      // Gọi đến endpoint /refresh để lấy token mới
-      const res = refreshTokenAPI(refreshToken)
-      const newAccessToken = res.data.result.token
+      if (error.response?.status === 401 && currentToken) {
+        const refreshToken = currentToken // Sử dụng token hiện tại như refresh token
 
-      if (newAccessToken) {
-        //cập nhật lại redux
-        const currentUser = axiosReduxStore.getState().user.currentUser
-        axiosReduxStore.dispatch(
-          updateCurrentUser({ ...currentUser, token: newAccessToken })
-        )
+        // Kiểm tra nếu request đã retry rồi thì không retry nữa để tránh vòng lặp vô hạn
+        if (error.config._retry) {
+          navigate('/login')
+          return Promise.reject(error)
+        }
+        error.config._retry = true
 
-        // Lưu token mới vào cookie và cập nhật lại header cho request gốc
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+        return refreshTokenAPI(refreshToken)
+            .then((res) => {
+              const newAccessToken = res.result.token
+              if (newAccessToken) {
+                // Cập nhật Redux
+                const currentUser = axiosReduxStore.getState().user.currentUser
+                axiosReduxStore.dispatch(updateCurrentUser({ ...currentUser, token: newAccessToken }))
 
-        // Gọi lại request gốc với token mới
-        return authorizedAxios(originalRequest)
-      } else {
-        throw new Error('Không lấy được token mới.')
+                // Cập nhật token mới vào header và gọi lại request
+                error.config.headers.Authorization = `Bearer ${newAccessToken}`
+                return authorizedAxios(error.config)
+              } else {
+                axiosReduxStore.dispatch(updateCurrentUser(null))
+                redirectToLogin()
+                return Promise.reject(error)
+              }
+            })
+            .catch((err) => {
+              axiosReduxStore.dispatch(updateCurrentUser(null))
+              redirectToLogin()
+              return Promise.reject(err)
+            })
       }
-    }
-    //bắt lỗi tập trung
-    let errorMessage = error?.message
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message
-    }
-    if (error.response?.status !== 410) {
-      toast.error(errorMessage)
-    }
 
-    return Promise.reject(error)
-  }
+      // Xử lý lỗi chung
+      let errorMessage = error?.message
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      }
+      if (error.response?.status !== 410) {
+        toast.error(errorMessage)
+      }
+
+      return Promise.reject(error)
+    }
 )
+
 
 export default authorizedAxios
