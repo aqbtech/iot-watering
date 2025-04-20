@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import authorizedAxios from '../../util/authorizeAxios'
 import { BASE_URL } from '../../util/constant'
-import { axiosPublic } from '../../util/authorizeAxios'
+import { axiosPublic } from '../../util/userAxios'
 
 //Định nghĩa initialState đúng cách
 const initialState = {

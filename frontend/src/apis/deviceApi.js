@@ -1,7 +1,7 @@
 import authorizedAxios from '../util/authorizeAxios'
 import { BASE_URL } from '../util/constant'
 import { toast } from 'react-toastify'
-import { axiosPublic } from '../util/authorizeAxios'
+import { axiosPublic } from '../util/userAxios'
 
 export const registerUserAPI = async (data) => {
   const response = await authorizedAxios.post(
@@ -44,4 +44,62 @@ export const triggerAPI = async (deviceId) => {
     `${BASE_URL}/device/v1/trigger?dvcId=${deviceId}`
   )
   return response
+}
+
+export const triggerFanAPI = async (deviceId) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/device/fan?dvcId=${deviceId}`
+  )
+  return response
+}
+
+export const triggerLightAPI = async (deviceId) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/device/light?dvcId=${deviceId}`
+  )
+  return response
+}
+
+export const triggerPumpAPI = async (deviceId) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/device/siren?dvcId=${deviceId}`
+  )
+  return response
+}
+
+export const triggerSirenAPI = async (deviceId) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/device/siren?dvcId=${deviceId}`
+  )
+  return response
+}
+
+export const setConfigAPI = async (data) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/device/setConfig`, data
+  )
+  return response
+}
+
+export const addDeviceAPI = async (data) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/device/v1/add-device`,
+    data
+  )
+  return response.data
+}
+
+export const getProfileAPI = async () => {
+  const response = await authorizedAxios.get(
+    `${BASE_URL}/user/v1/profile`
+  )
+  return response.data
+}
+
+export const updateProfileAPI = async (data) => {
+  const response = await authorizedAxios.put(
+    `${BASE_URL}/user/v1/profile`,
+    data
+  )
+  return response.data
 }

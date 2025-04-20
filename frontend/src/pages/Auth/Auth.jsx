@@ -10,31 +10,57 @@ const Auth = () => {
   const isRegister = location.pathname === '/Signup'
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex' }}>
-      {/* Cột chứa LoginForm */}
+    <Box sx={{
+      maxHeight: '100vh',
+      display: 'flex',
+      overflow: 'hidden',
+      background: 'linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%)'
+    }}>
+      {/* Form Column */}
       <Box
         sx={{
           flex: 1,
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
-          bgcolor: 'blue.50',
-          p: 4
+          px: { xs: 2, sm: 4, md: 6 },
+          overflow: 'auto',
+          '&::-webkit-scrollbar': {
+            width: '8px'
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'rgba(0,0,0,0.1)',
+            borderRadius: '4px'
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#2E7D32',
+            borderRadius: '4px',
+            '&:hover': {
+              background: '#1B5E20'
+            }
+          }
         }}
       >
-        {isLogin && <LoginForm />}
-        {isRegister && <RegisterForm />}
+        <Box sx={{
+          width: '100%',
+          maxWidth: 600,
+          mt: 2
+        }}>
+          {isLogin && <LoginForm />}
+          {isRegister && <RegisterForm />}
+        </Box>
       </Box>
 
-      {/* Cột chứa hình ảnh */}
+      {/* Image Column */}
       <Box
         sx={{
           flex: 1,
-          display: 'flex',
+          display: { xs: 'none', md: 'flex' },
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100vh', // Giới hạn chiều cao tối đa bằng chiều cao màn hình
-          overflow: 'hidden' // Ngăn tràn nội dung nếu có
+          height: '100vh',
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
         <Box
@@ -43,9 +69,9 @@ const Auth = () => {
           alt="background"
           sx={{
             width: '100%',
-            maxHeight: '100vh', // Giới hạn chiều cao tối đa bằng chiều cao màn hình
-            objectFit: 'cover', // Giữ đúng tỉ lệ hình ảnh mà không bị méo
-            borderRadius: '80px 0px 0px 80px'
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '80px 0 0 80px'
           }}
         />
       </Box>
