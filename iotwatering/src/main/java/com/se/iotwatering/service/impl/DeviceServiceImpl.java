@@ -1,6 +1,8 @@
 package com.se.iotwatering.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.se.iotwatering.constant.ConfigurationDefault;
+import com.se.iotwatering.constant.CoreIotDefaultKey;
 import com.se.iotwatering.dto.http.request.DeviceAddRequest;
 import com.se.iotwatering.dto.http.request.DeviceConfigRequest;
 import com.se.iotwatering.dto.http.request.DeviceStateRequest;
@@ -8,11 +10,14 @@ import com.se.iotwatering.dto.http.response.DeviceInfoResponse;
 import com.se.iotwatering.entity.Configuration;
 import com.se.iotwatering.entity.Sensor;
 import com.se.iotwatering.entity.User;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.AuthErrorCode;
+import com.se.iotwatering.exception.DeviceErrorCode;
+import com.se.iotwatering.exception.UserErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.mapper.Device2Sensor;
 import com.se.iotwatering.repo.SensorRepository;
 import com.se.iotwatering.repo.UserRepository;
+import com.se.iotwatering.service.CoreIotDeviceAttribute;
 import com.se.iotwatering.service.DeviceService;
 import com.se.iotwatering.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,7 @@ public class DeviceServiceImpl implements DeviceService {
 	private final SensorRepository sensorRepository;
 	private final Device2Sensor device2Sensor;
 	private final UserRepository userRepository;
+	private final CoreIotDeviceAttribute coreIotDeviceAttribute;
 
 	@Override
 	@Transactional
@@ -54,9 +60,9 @@ public class DeviceServiceImpl implements DeviceService {
 
 		// assign current user for this device(sensor)
 		String currentUserName = SecurityUtil.getCurrentUsername();
-		if (currentUserName == null) throw new WebServerException(ErrorCode.UNAUTHENTICATED);
+		if (currentUserName == null) throw new WebServerException(AuthErrorCode.UNAUTHENTICATED);
 		User user = userRepository.findByUsername(currentUserName)
-				.orElseThrow(() -> new WebServerException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
 		List<User> users = List.of(user);
 
 		// add user to sensor
@@ -73,7 +79,7 @@ public class DeviceServiceImpl implements DeviceService {
 	@Transactional
 	public boolean setConfig(DeviceConfigRequest request) {
 		Sensor sensor = sensorRepository.findByPureSensorId(request.getDeviceId())
-				.orElseThrow(() -> new WebServerException(ErrorCode.DEVICE_NOT_FOUND));
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
 
 		Configuration configuration = sensor.getConfiguration();
 		boolean flag = configuration != null;
@@ -136,9 +142,11 @@ public class DeviceServiceImpl implements DeviceService {
 	public DeviceInfoResponse getDeviceInfo(String deviceId) {
 		// Find the sensor by device ID
 		Sensor sensor = sensorRepository.findByPureSensorId(deviceId)
-				.orElseThrow(() -> new WebServerException(ErrorCode.DEVICE_NOT_FOUND));
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
 
 		Configuration config = sensor.getConfiguration();
+		if (config == null) throw new WebServerException(DeviceErrorCode.CONFIG_NOT_FOUND);
+
 
 		// Build response using the configuration getters
 		return DeviceInfoResponse.builder()
@@ -149,10 +157,10 @@ public class DeviceServiceImpl implements DeviceService {
 				.siren(getComponentStatus(sensor, "siren"))
 				.light(getComponentStatus(sensor, "light"))
 				// Use actual configuration values instead of defaults
-				.configFan(config != null ? config.getHumidity() : 0.0) // Using humidity for fan as an example
-				.configLight(config != null ? config.getLight() : 0.0)
-				.configSiren(config != null ? config.getTemperature() : 0.0) // Using temperature for siren as an example
-				.configPump(config != null ? config.getSoilMoisture() : 0.0)
+				.configFan(config.getHumidity())
+				.configLight(config.getLight())
+				.configSiren(config.getTemperature())
+				.configPump(config.getSoilMoisture())
 				.build();
 	}
 
@@ -168,14 +176,15 @@ public class DeviceServiceImpl implements DeviceService {
 		try {
 			// Find the sensor by device ID
 			Sensor sensor = sensorRepository.findByPureSensorId(deviceId)
-					.orElseThrow(() -> new WebServerException(ErrorCode.DEVICE_NOT_FOUND));
+					.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
 
-			// Update the sensor's status (this is a simplified approach as actual implementation
-			// would need to track individual component states)
-			sensor.setStatus(state ? "active" : "inactive");
-
-			// Save the updated sensor
-			sensorRepository.save(sensor);
+			String coreiot_dvc_id = sensor.getPureSensorId();
+			CoreIotDefaultKey key = CoreIotDefaultKey.resolve(component.toLowerCase());
+			boolean response = coreIotDeviceAttribute.triggerAttribute(coreiot_dvc_id, key);
+			if (!response) {
+				log.error("Failed to trigger {} for device ID: {}", component, deviceId);
+				return false;
+			}
 			log.info("Updated {} state to {} for device ID: {}", component, state ? "active" : "inactive", deviceId);
 
 			return true;
@@ -193,7 +202,9 @@ public class DeviceServiceImpl implements DeviceService {
 	 * @return The component status ("active" or "inactive")
 	 */
 	private String getComponentStatus(Sensor sensor, String component) {
-		// TODO: Implement logic to get the actual status of the component
-		return sensor.getStatus();
+		String coreiot_dvc_id = sensor.getPureSensorId();
+		CoreIotDefaultKey key = CoreIotDefaultKey.resolve(component.toLowerCase());
+		JsonNode nowState = coreIotDeviceAttribute.getNowState(coreiot_dvc_id, key);
+		return nowState.get("value").asText();
 	}
 }

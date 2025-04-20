@@ -8,7 +8,7 @@ import com.se.iotwatering.dto.http.response.DeviceInfoResponse;
 import com.se.iotwatering.entity.Configuration;
 import com.se.iotwatering.entity.Sensor;
 import com.se.iotwatering.entity.User;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.DeviceErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.mapper.Device2Sensor;
 import com.se.iotwatering.repo.SensorRepository;
@@ -215,7 +215,7 @@ class DeviceServiceTest {
             deviceService.setConfig(request)
         );
         
-        assertEquals(ErrorCode.DEVICE_NOT_FOUND, exception.getErrorCode());
+        assertEquals(DeviceErrorCode.DEVICE_NOT_FOUND, exception.getErrorCode());
         verify(sensorRepository).findByPureSensorId("non-existent-device");
         verify(sensorRepository, never()).save(any(Sensor.class));
     }
@@ -334,7 +334,7 @@ class DeviceServiceTest {
             deviceService.getDeviceInfo("non-existent-device")
         );
         
-        assertEquals(ErrorCode.DEVICE_NOT_FOUND, exception.getErrorCode());
+        assertEquals(DeviceErrorCode.DEVICE_NOT_FOUND, exception.getErrorCode());
         verify(sensorRepository).findByPureSensorId("non-existent-device");
     }
     
@@ -353,7 +353,7 @@ class DeviceServiceTest {
             deviceService.controlLight(request)
         );
         
-        assertEquals(ErrorCode.DEVICE_NOT_FOUND, exception.getErrorCode());
+        assertEquals(DeviceErrorCode.DEVICE_NOT_FOUND, exception.getErrorCode());
         verify(sensorRepository).findByPureSensorId("non-existent-device");
         verify(sensorRepository, never()).save(any(Sensor.class));
     }
