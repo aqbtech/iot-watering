@@ -3,7 +3,8 @@ package com.se.iotwatering.service;
 import com.se.iotwatering.dto.http.request.UserProfileUpdateRequest;
 import com.se.iotwatering.dto.http.response.UserProfileResponse;
 import com.se.iotwatering.entity.User;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.BaseErrorCode;
+import com.se.iotwatering.exception.UserErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.UserRepository;
 import com.se.iotwatering.service.impl.UserServiceImpl;
@@ -94,7 +95,7 @@ class UserServiceTest {
             userService.getUserProfile("nonexistent")
         );
         
-        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+        assertEquals(UserErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         verify(userRepository, times(1)).findByUsername("nonexistent");
     }
     
@@ -153,7 +154,7 @@ class UserServiceTest {
         // Clean up security context
         SecurityContextHolder.clearContext();
         
-        assertEquals(ErrorCode.UNKNOWN_ERROR, exception.getErrorCode());
+        assertEquals(BaseErrorCode.UNKNOWN_ERROR, exception.getErrorCode());
         verify(userRepository, times(1)).findByUsername(TEST_USERNAME);
         verify(userRepository, never()).save(any(User.class));
     }
@@ -175,7 +176,7 @@ class UserServiceTest {
         // Clean up security context
         SecurityContextHolder.clearContext();
         
-        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+        assertEquals(UserErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         verify(userRepository, times(1)).findByUsername(TEST_USERNAME);
         verify(userRepository, never()).save(any(User.class));
     }

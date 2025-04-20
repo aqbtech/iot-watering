@@ -5,7 +5,8 @@ import com.se.iotwatering.constant.SystemConstant;
 import com.se.iotwatering.dto.http.request.UserRegister;
 import com.se.iotwatering.dto.http.response.MinimalUserProfile;
 import com.se.iotwatering.entity.User;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.BaseErrorCode;
+import com.se.iotwatering.exception.UserErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.UserRepository;
 import com.se.iotwatering.service.GuestService;
@@ -40,10 +41,10 @@ public class GuestServiceImpl implements GuestService {
 			// Lưu và flush đối tượng vào database
 			userRepository.saveAndFlush(newUser);
 		} catch (DataIntegrityViolationException e) {
-			throw new WebServerException(ErrorCode.USER_EXISTED);
+			throw new WebServerException(UserErrorCode.USER_EXISTED);
 		} catch (Exception e) {
 			log.error("Error when registering new user: {}", e.getMessage());
-			throw new WebServerException(ErrorCode.UNKNOWN_ERROR);
+			throw new WebServerException(BaseErrorCode.UNKNOWN_ERROR);
 		}
 		// Trả về thông tin profile tối giản của user mới
 		return MinimalUserProfile.builder()

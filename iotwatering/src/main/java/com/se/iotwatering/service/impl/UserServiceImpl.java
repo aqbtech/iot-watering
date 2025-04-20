@@ -3,7 +3,9 @@ package com.se.iotwatering.service.impl;
 import com.se.iotwatering.dto.http.request.UserProfileUpdateRequest;
 import com.se.iotwatering.dto.http.response.UserProfileResponse;
 import com.se.iotwatering.entity.User;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.AuthErrorCode;
+import com.se.iotwatering.exception.BaseErrorCode;
+import com.se.iotwatering.exception.UserErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.UserRepository;
 import com.se.iotwatering.service.UserService;
@@ -29,7 +31,7 @@ public class UserServiceImpl implements UserService {
         String username = getCurrentUsername();
         
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new WebServerException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
         
         // Update user information
         user.setFirstName(request.getFirstName());
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
             user.setDob(dob);
         } catch (Exception e) {
             log.error("Failed to parse date of birth: {}", request.getDateOfBirth(), e);
-            throw new WebServerException(ErrorCode.UNKNOWN_ERROR);
+            throw new WebServerException(BaseErrorCode.UNKNOWN_ERROR);
         }
         
         // Save an updated user
@@ -55,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileResponse getUserProfile(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new WebServerException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
         
         return UserProfileResponse.builder()
                 .firstName(user.getFirstName())
@@ -78,6 +80,6 @@ public class UserServiceImpl implements UserService {
         
         // For demonstration purposes, we'll throw an exception
         // This should be replaced with proper security integration
-        throw new WebServerException(ErrorCode.UNAUTHORIZED);
+        throw new WebServerException(AuthErrorCode.UNAUTHORIZED);
     }
 }

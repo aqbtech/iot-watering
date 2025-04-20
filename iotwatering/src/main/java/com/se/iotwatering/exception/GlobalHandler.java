@@ -1,6 +1,7 @@
 package com.se.iotwatering.exception;
 
 import com.se.iotwatering.dto.http.response.ResponseAPITemplate;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.Instant;
 
 @Slf4j
 @RestControllerAdvice
@@ -23,9 +26,21 @@ public class GlobalHandler {
     }
 
     @ExceptionHandler(WebServerException.class)
-    public ResponseEntity<ResponseAPITemplate<String>> handleWebServerException(WebServerException e) {
-        return handleException(e, HttpStatus.resolve(e.getErrorCode().getHttpStatusCode().value()));
+    public ResponseEntity<ResponseAPITemplate<String>> handleWebServerException(
+            WebServerException e, HttpServletRequest request) {
+    
+        ErrorCode code = e.getErrorCode();
+        return ResponseEntity.status(code.getHttpStatus())
+                .body(ResponseAPITemplate.<String>builder()
+                        .code(code.getCode())
+                        .message(code.getMessage())
+                        .status(code.getHttpStatus().value())
+                        .path(request.getRequestURI())
+                        .timestamp(Instant.now().toString())
+                        .result(null)
+                        .build());
     }
+    
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseAPITemplate<String>> handleWebServerException(IllegalArgumentException e) {

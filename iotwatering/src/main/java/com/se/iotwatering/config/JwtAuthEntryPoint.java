@@ -1,7 +1,7 @@
 package com.se.iotwatering.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.se.iotwatering.exception.AuthErrorCode;
 import com.se.iotwatering.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,21 +23,21 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		if(authException.getMessage().equalsIgnoreCase("token is expired")) {
-			ErrorCode errorCode = ErrorCode.TOKEN_EXPIRED;
-			response.setStatus(errorCode.getHttpStatusCode().value());
+			ErrorCode errorCode = AuthErrorCode.TOKEN_EXPIRED;
+			response.setStatus(errorCode.getHttpStatus().value());
 			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-			ResponseEntity<?> apiResponse = ResponseEntity.status(errorCode.getHttpStatusCode())
-					.body(errorCode.getMessage());
+			ResponseEntity<?> apiResponse = ResponseEntity.status(errorCode.getHttpStatus())
+				.body(errorCode.getMessage());
 			response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
 			response.flushBuffer();
 		}
-		ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+		ErrorCode errorCode = AuthErrorCode.UNAUTHENTICATED;
 
-		response.setStatus(errorCode.getHttpStatusCode().value());
+		response.setStatus(errorCode.getHttpStatus().value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-		ResponseEntity<?> apiResponse = ResponseEntity.status(errorCode.getHttpStatusCode())
+		ResponseEntity<?> apiResponse = ResponseEntity.status(errorCode.getHttpStatus())
 				.body(errorCode.getMessage());
 //				.code(errorCode.getCode())
 //				.message(errorCode.getMessage())
