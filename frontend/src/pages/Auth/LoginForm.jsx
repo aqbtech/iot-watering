@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { TextField, Checkbox, FormControlLabel, Button, Typography, Divider, Box, Container, Grid, Paper } from '@mui/material'
-import { assets } from '../../assets/asset.js'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import GoogleIcon from '@mui/icons-material/Google'
 import { FIELD_REQUIRED_MESSAGE, USERNAME_RULE, USERNAME_RULE_MESSAGE, PASSWORD_RULE, PASSWORD_RULE_MESSAGE } from '../../util/validator'
@@ -9,6 +8,8 @@ import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '../../redux/Slices/userSlice.js'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+
+
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')

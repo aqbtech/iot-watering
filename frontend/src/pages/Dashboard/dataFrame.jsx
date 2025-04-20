@@ -1,6 +1,8 @@
 import { Box, Card, Typography } from '@mui/material'
 import React from 'react'
 import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined'
+
+
 const DataFrame = ({ name, value, icon: Icon }) => {
   return (
     <Card sx={{
