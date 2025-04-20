@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 
 import com.se.iotwatering.constant.SystemConstant;
@@ -8,6 +8,7 @@ import com.se.iotwatering.entity.User;
 import com.se.iotwatering.exception.ErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.UserRepository;
+import com.se.iotwatering.service.GuestService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

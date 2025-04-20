@@ -14,6 +14,8 @@ public class ErrorLog {
 	private String errorMessage;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "notification_id")
+	@JoinColumn(name = "notification_id",
+			referencedColumnName = "notificationId",
+			nullable = false)
 	private Notification notification;
 }

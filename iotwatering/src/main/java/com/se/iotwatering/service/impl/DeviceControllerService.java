@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

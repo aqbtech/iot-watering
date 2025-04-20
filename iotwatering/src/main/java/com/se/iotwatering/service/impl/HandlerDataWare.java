@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,7 @@ import com.se.iotwatering.exception.ErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.mapper.SensorPayload;
 import com.se.iotwatering.repo.SensorDataRepo;
+import com.se.iotwatering.service.DataObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

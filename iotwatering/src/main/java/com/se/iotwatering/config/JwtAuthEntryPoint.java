@@ -21,6 +21,17 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 						 AuthenticationException authException)
 			throws IOException, ServletException {
 
+		ObjectMapper objectMapper = new ObjectMapper();
+		if(authException.getMessage().equalsIgnoreCase("token is expired")) {
+			ErrorCode errorCode = ErrorCode.TOKEN_EXPIRED;
+			response.setStatus(errorCode.getHttpStatusCode().value());
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+			ResponseEntity<?> apiResponse = ResponseEntity.status(errorCode.getHttpStatusCode())
+					.body(errorCode.getMessage());
+			response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+			response.flushBuffer();
+		}
 		ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
 
 		response.setStatus(errorCode.getHttpStatusCode().value());
@@ -31,7 +42,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 //				.code(errorCode.getCode())
 //				.message(errorCode.getMessage())
 //				.build();
-		ObjectMapper objectMapper = new ObjectMapper();
+
 		response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
 		response.flushBuffer();
 	}

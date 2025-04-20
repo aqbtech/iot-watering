@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.se.iotwatering.config.CoreIotConfig;
 import com.se.iotwatering.dto.SensorData;

@@ -11,6 +11,8 @@ public enum ErrorCode {
 	UNAUTHENTICATED(1001, "Unauthenticated", HttpStatus.UNAUTHORIZED),
 	UNAUTHORIZED(1002, "You do not have permission", HttpStatus.FORBIDDEN),
 	USER_NOT_FOUND(1003, "User not found", HttpStatus.NOT_FOUND),
+	TOKEN_EXPIRED(1004, "Token is expired", HttpStatus.UNAUTHORIZED),
+	INVALID_TOKEN(1005, "Invalid token", HttpStatus.UNAUTHORIZED),
 	USER_NOT_EXIST(1007, "User not found", HttpStatus.BAD_REQUEST),
 	USER_EXISTED(1008, "Username existed", HttpStatus.BAD_REQUEST),
 	DEVICE_NOT_FOUND(1004, "Device not found", HttpStatus.NOT_FOUND),;

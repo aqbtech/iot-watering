@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -18,6 +18,7 @@ import com.se.iotwatering.exception.ErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.InvalidatedTokenRepository;
 import com.se.iotwatering.repo.UserRepository;
+import com.se.iotwatering.service.AuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -161,8 +162,8 @@ public class AuthenticationService implements AuthenticationProvider {
 		}
 		// check if token is invalidated
 		if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
-			throw new WebServerException(ErrorCode.UNAUTHENTICATED);
-//			 throw new WebServerException(ErrorCode.INVALID_TOKEN);
+//			throw new WebServerException(ErrorCode.UNAUTHENTICATED);
+			 throw new WebServerException(ErrorCode.INVALID_TOKEN);
 		}
 		return signedJWT;
 	}

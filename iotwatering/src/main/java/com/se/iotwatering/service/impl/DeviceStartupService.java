@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.se.iotwatering.entity.Sensor;
 import com.se.iotwatering.exception.ErrorCode;
