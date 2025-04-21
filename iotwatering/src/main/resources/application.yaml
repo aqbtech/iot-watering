@@ -9,7 +9,7 @@ spring:
     jpa:
         hibernate:
             ddl-auto: ${DDL_AUTO:update}
-        show-sql: true
+        show-sql: false
 
 security:
     cors:
@@ -25,3 +25,10 @@ jwt:
     signerKey: ${JWT_SIGNER_KEY} # 32-byte key
     valid-duration: 3600 # in second
     refreshable-duration: 36000 # in seconds
+
+brevo:
+    api:
+        key: ${BREVO_API_KEY}
+    sender:
+        email: ${BREVO_SENDER_EMAIL}
+        name: ${BREVO_SENDER_NAME}
