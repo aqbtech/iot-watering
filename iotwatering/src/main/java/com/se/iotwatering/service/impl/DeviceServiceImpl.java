@@ -117,25 +117,25 @@ public class DeviceServiceImpl implements DeviceService {
 	@Override
 	@Transactional
 	public boolean controlLight(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), "light", request.isState());
+		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.LIGHT_CONTROL, request.isState());
 	}
 
 	@Override
 	@Transactional
 	public boolean controlPump(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), "pump", request.isState());
+		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.PUMP_CONTROL, request.isState());
 	}
 
 	@Override
 	@Transactional
 	public boolean controlSiren(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), "siren", request.isState());
+		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.SIREN_CONTROL, request.isState());
 	}
 
 	@Override
 	@Transactional
 	public boolean controlFan(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), "fan", request.isState());
+		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.FAN_CONTROL, request.isState());
 	}
 
 	@Override
@@ -149,19 +149,20 @@ public class DeviceServiceImpl implements DeviceService {
 
 
 		// Build response using the configuration getters
-		return DeviceInfoResponse.builder()
+		var result =  DeviceInfoResponse.builder()
 				.name(sensor.getName())
 				.location(sensor.getLocation())
-				.fan(getComponentStatus(sensor, "fan"))
-				.pump(getComponentStatus(sensor, "pump"))
-				.siren(getComponentStatus(sensor, "siren"))
-				.light(getComponentStatus(sensor, "light"))
+				.fan(getComponentStatus(sensor, CoreIotDefaultKey.FAN_CONTROL))
+				.pump(getComponentStatus(sensor, CoreIotDefaultKey.PUMP_CONTROL))
+				.siren(getComponentStatus(sensor, CoreIotDefaultKey.SIREN_CONTROL))
+				.light(getComponentStatus(sensor, CoreIotDefaultKey.LIGHT_CONTROL))
 				// Use actual configuration values instead of defaults
 				.configFan(config.getHumidity())
 				.configLight(config.getLight())
 				.configSiren(config.getTemperature())
 				.configPump(config.getSoilMoisture())
 				.build();
+		return result;
 	}
 
 	/**
@@ -172,15 +173,14 @@ public class DeviceServiceImpl implements DeviceService {
 	 * @param state     The new state (true = active, false = inactive)
 	 * @return True if the update was successful
 	 */
-	private boolean updateDeviceComponentState(String deviceId, String component, boolean state) {
+	private boolean updateDeviceComponentState(String deviceId, CoreIotDefaultKey component, boolean state) {
+		// Find the sensor by device ID
+		Sensor sensor = sensorRepository.findByPureSensorId(deviceId)
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
 		try {
-			// Find the sensor by device ID
-			Sensor sensor = sensorRepository.findByPureSensorId(deviceId)
-					.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
-
 			String coreiot_dvc_id = sensor.getPureSensorId();
-			CoreIotDefaultKey key = CoreIotDefaultKey.resolve(component.toLowerCase());
-			boolean response = coreIotDeviceAttribute.triggerAttribute(coreiot_dvc_id, key);
+//			CoreIotDefaultKey key = CoreIotDefaultKey.resolve(component.toLowerCase());
+			boolean response = coreIotDeviceAttribute.triggerAttribute(coreiot_dvc_id, component);
 			if (!response) {
 				log.error("Failed to trigger {} for device ID: {}", component, deviceId);
 				return false;
@@ -201,10 +201,10 @@ public class DeviceServiceImpl implements DeviceService {
 	 * @param component The component name
 	 * @return The component status ("active" or "inactive")
 	 */
-	private String getComponentStatus(Sensor sensor, String component) {
+	private String getComponentStatus(Sensor sensor, CoreIotDefaultKey component) {
 		String coreiot_dvc_id = sensor.getPureSensorId();
-		CoreIotDefaultKey key = CoreIotDefaultKey.resolve(component.toLowerCase());
-		JsonNode nowState = coreIotDeviceAttribute.getNowState(coreiot_dvc_id, key);
+//		CoreIotDefaultKey key = CoreIotDefaultKey.resolve(component.toLowerCase());
+		JsonNode nowState = coreIotDeviceAttribute.getNowState(coreiot_dvc_id, component);
 		return nowState.get("value").asText();
 	}
 }

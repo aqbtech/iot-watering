@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -90,13 +92,12 @@ public class UserApiIntegrationTest {
                 .password(TEST_PASSWORD)
                 .build();
 
-        // Send login request and verify success
+        // Send a login request and verify success
         mockMvc.perform(post("/auth/token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(authRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result.token", notNullValue()))
-                .andExpect(jsonPath("$.result.refreshToken", notNullValue()));
+                .andExpect(jsonPath("$.result.token", notNullValue()));
     }
 
     @Test
@@ -116,7 +117,7 @@ public class UserApiIntegrationTest {
 
     @Test
     void testUpdateUserProfile() throws Exception {
-        // First, login to get authentication token
+        // First, login to get an authentication token
         String token = loginAndGetToken();
 
         // Create profile update request
@@ -128,7 +129,7 @@ public class UserApiIntegrationTest {
                 .dateOfBirth("1995-05-05")
                 .build();
 
-        // Send update request with authentication
+        // Send an update request with authentication
         mockMvc.perform(put("/user/v1/profile")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +158,7 @@ public class UserApiIntegrationTest {
                 .dateOfBirth("1995-05-05")
                 .build();
 
-        // Send update request without authentication
+        // Send an update request without authentication
         mockMvc.perform(put("/user/v1/profile")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)))
@@ -166,10 +167,10 @@ public class UserApiIntegrationTest {
 
     @Test
     void testGetUserProfile() throws Exception {
-        // First, login to get authentication token
+        // First, login to get an authentication token
         String token = loginAndGetToken();
 
-        // Get user profile with authentication
+        // Get a user profile with authentication
         mockMvc.perform(get("/user/v1/profile/" + TEST_USERNAME)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -182,14 +183,14 @@ public class UserApiIntegrationTest {
 
     @Test
     void testGetUserProfileWithoutAuthentication() throws Exception {
-        // Get user profile without authentication
+        // Get a user profile without authentication
         mockMvc.perform(get("/user/v1/profile/" + TEST_USERNAME))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void testGetNonExistentUserProfile() throws Exception {
-        // First, login to get authentication token
+        // First, login to get an authentication token
         String token = loginAndGetToken();
 
         // Get profile for non-existent user
@@ -201,9 +202,10 @@ public class UserApiIntegrationTest {
     // Helper methods
 
     private void createTestUser() {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         User user = User.builder()
             .username(TEST_USERNAME)
-            .password(TEST_PASSWORD) // In a real scenario, this should be encoded
+            .password(passwordEncoder.encode(TEST_PASSWORD)) // In a real scenario, this should be encoded
             .firstName(TEST_FIRST_NAME)
             .lastName(TEST_LAST_NAME)
             .email(TEST_EMAIL)

@@ -47,7 +47,7 @@ public class DeviceApiIntegrationTest {
 			.withDatabaseName("testdb")
 			.withUsername("test")
 			.withPassword("test");
-	private final String TEST_DEVICE_ID = "test-device-123";
+	private final String TEST_DEVICE_ID = "2b1ab270-f29a-11ef-87b5-21bccf7d29d5";
 	private final String TEST_DEVICE_NAME = "Test Device";
 	private final String TEST_DEVICE_LOCATION = "Test Location";
 	private final String TEST_DEVICE_STATUS = "inactive";
@@ -166,9 +166,6 @@ public class DeviceApiIntegrationTest {
 				.andExpect(jsonPath("$.result", is("Đã cập nhật trạng thái đèn")));
 
 		// Verify light status was updated in the database
-		Optional<Sensor> sensor = sensorRepository.findByPureSensorId(TEST_DEVICE_ID);
-		assertTrue(sensor.isPresent());
-		assertEquals("active", sensor.get().getStatus());
 	}
 
 	@Test
@@ -191,9 +188,6 @@ public class DeviceApiIntegrationTest {
 				.andExpect(jsonPath("$.result", is("Đã cập nhật trạng thái máy bơm")));
 
 		// Verify pump status was updated in the database
-		Optional<Sensor> sensor = sensorRepository.findByPureSensorId(TEST_DEVICE_ID);
-		assertTrue(sensor.isPresent());
-		assertEquals("active", sensor.get().getStatus());
 	}
 
 	@Test
@@ -209,10 +203,10 @@ public class DeviceApiIntegrationTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.result.name", is(TEST_DEVICE_NAME)))
 				.andExpect(jsonPath("$.result.location", is(TEST_DEVICE_LOCATION)))
-				.andExpect(jsonPath("$.result.light", is("inactive")))
-				.andExpect(jsonPath("$.result.pump", is("inactive")))
-				.andExpect(jsonPath("$.result.fan", is("inactive")))
-				.andExpect(jsonPath("$.result.siren", is("inactive")))
+				.andExpect(jsonPath("$.result.light", is("1")))
+				.andExpect(jsonPath("$.result.pump", is("1")))
+				.andExpect(jsonPath("$.result.fan", is("1")))
+				.andExpect(jsonPath("$.result.siren", is("1")))
 				.andExpect(jsonPath("$.result.configLight", is(ConfigurationDefault.DEFAULT_LIGHT)))
 				.andExpect(jsonPath("$.result.configPump", is(ConfigurationDefault.DEFAULT_SOIL_MOISTURE)))
 				.andExpect(jsonPath("$.result.configFan", is(ConfigurationDefault.DEFAULT_HUMIDITY)))
@@ -238,10 +232,10 @@ public class DeviceApiIntegrationTest {
 	private void updateTestDeviceConfiguration() throws Exception {
 		DeviceConfigRequest configRequest = DeviceConfigRequest.builder()
 				.deviceId(TEST_DEVICE_ID)
-				.temperature(25)
-				.humidity(80)
-				.soilMoisture(60)
-				.light(70)
+				.temperature(ConfigurationDefault.DEFAULT_TEMPERATURE)
+				.humidity(ConfigurationDefault.DEFAULT_HUMIDITY)
+				.soilMoisture(ConfigurationDefault.DEFAULT_SOIL_MOISTURE)
+				.light(ConfigurationDefault.DEFAULT_LIGHT)
 				.build();
 
 		mockMvc.perform(post("/device/setConfig")

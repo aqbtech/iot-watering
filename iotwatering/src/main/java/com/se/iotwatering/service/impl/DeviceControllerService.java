@@ -8,19 +8,23 @@ import com.se.iotwatering.dto.DeviceInfo;
 import com.se.iotwatering.dto.SensorData;
 import com.se.iotwatering.dto.SensorDetailResponse;
 import com.se.iotwatering.entity.Sensor;
+import com.se.iotwatering.exception.BaseErrorCode;
 import com.se.iotwatering.exception.DeviceErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.SensorRepo;
 import com.se.iotwatering.service.CoreIotDeviceAttribute;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DeviceControllerService implements CoreIotDeviceAttribute {
@@ -33,9 +37,9 @@ public class DeviceControllerService implements CoreIotDeviceAttribute {
 		String uri = "https://app.coreiot.io/api/plugins/telemetry/DEVICE/" + deviceId + "/values/attributes";
 		Map<String, Object> queryParams = new LinkedHashMap<>();
 		queryParams.put("keys", attribute.getKey());
-		String nowState = coreIotRestClient.sendRequest("GET", uri, queryParams, null);
-		ObjectMapper mapper = new ObjectMapper();
 		try {
+			String nowState = coreIotRestClient.sendRequest("GET", uri, queryParams, null);
+			ObjectMapper mapper = new ObjectMapper();
 			JsonNode root = mapper.readTree(nowState);
 			if (root.isArray() && !root.isEmpty()) {
 				JsonNode attributeNode = root.get(root.size() - 1);
@@ -43,8 +47,18 @@ public class DeviceControllerService implements CoreIotDeviceAttribute {
 			} else {
 				throw new WebServerException(DeviceErrorCode.FIELD_NOT_FOUND);
 			}
+		} catch (WebClientResponseException e) {
+			// Handle 404 error
+			if (e.getStatusCode().value() == 404) {
+				throw new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND);
+			} else {
+				throw new WebServerException(DeviceErrorCode.FIELD_NOT_FOUND);
+			}
+		} catch (IllegalArgumentException | NullPointerException e) {
+			throw new WebServerException(DeviceErrorCode.FIELD_NOT_FOUND);
 		} catch (Exception e) {
-			throw new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND);
+			log.debug("Error in DeviceControllerService$getNowState: {}", e.getMessage());
+			throw new WebServerException(BaseErrorCode.UNKNOWN_ERROR);
 		}
 	}
 	
@@ -69,7 +83,7 @@ public class DeviceControllerService implements CoreIotDeviceAttribute {
 		}
 		// check new now state to ensure the change is successful
 		JsonNode newState = getNowState(deviceId, attribute);
-		return newState.get("value").asInt() == (result.equals("1") ? 1 : 0);
+		return newState.get("value").asInt() != nowState.get("value").asInt();
 	}
 	
 	public String triggerPump(long deviceId) {

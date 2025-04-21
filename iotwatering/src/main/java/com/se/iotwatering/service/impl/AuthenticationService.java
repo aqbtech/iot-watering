@@ -79,6 +79,10 @@ public class AuthenticationService implements AuthenticationProvider {
 //		var token = generateToken(user.getFirst()[0].toString(), user.getFirst()[2].toString());
 		var user = userRepository.findByUsername(request.getUsername())
 				.orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
+		boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+		if (!authenticated) {
+			throw new WebServerException(AuthErrorCode.UNAUTHENTICATED);
+		}
 		var token = generateToken(user.getUsername(), SystemConstant.ROLE_USER);
 		return AuthenticationResponse.builder()
 				.token(token.get("token"))

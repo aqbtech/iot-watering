@@ -3,8 +3,8 @@ package com.se.iotwatering.constant;
 public enum CoreIotDefaultKey {
     FAN_CONTROL("fanControl"),
     PUMP_CONTROL("pumpControl"),
-    SIREN("fanState"),
-    PUMP_STATE("pumpState");
+    SIREN_CONTROL("sirenControl"),
+    LIGHT_CONTROL("lightControl");
 
     private final String key;
 

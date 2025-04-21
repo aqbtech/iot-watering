@@ -105,7 +105,7 @@ class UserServiceTest {
         when(userRepository.findByUsername(TEST_USERNAME)).thenReturn(Optional.of(testUser));
         when(userRepository.save(any(User.class))).thenReturn(testUser);
         
-        // Set up security context with test user for the test
+        // Set up security context with the test user for the test
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(TEST_USERNAME, null, null));
         
@@ -142,7 +142,7 @@ class UserServiceTest {
                 .dateOfBirth("invalid-date")
                 .build();
         
-        // Set up security context with test user for the test
+        // Set up security context with the test user for the test
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(TEST_USERNAME, null, null));
         
