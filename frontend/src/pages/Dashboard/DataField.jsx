@@ -1,5 +1,5 @@
-import { Box, Button, Typography } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
+import { Box, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined'
 import SpaOutlinedIcon from '@mui/icons-material/SpaOutlined'
@@ -19,7 +19,6 @@ const DataField = ({ deviceId }) => {
     Light: '--',
     Humidity: '--'
   })
-  const [error, setError] = useState(false) // Trạng thái lỗi
   const user = useSelector(selectCurrentUser)
   const token = user?.token
 
@@ -106,7 +105,8 @@ const DataField = ({ deviceId }) => {
         justifyContent: 'space-between'
       }}>
         {sensorData.map((item, index) => (
-          <DataFrame name={item.label} value={item.value} icon={item.icon} key={index}/>
+          <DataFrame name={item.label} value={parseFloat(item.value).toFixed(2)} icon={item.icon}
+            key={index}/>
         ))}
       </Box>
       <Typography variant="subtitle1" sx={{ color: 'gray' }}>

@@ -1,32 +1,26 @@
 import {
   Box,
   Typography,
-  Table,
-  List,
-  ListItem,
   Container
 } from '@mui/material'
 import HistoryTable from './HistoryTable'
 import Header from '../../components/Header'
 import PageLoadingSpinner from '../../components/PageLoadingSpinner'
 import { useEffect, useState } from 'react'
-import { selectedCurrentActiveDashboard, fetchDetailDashboard, updateState } from '../../redux/Slices/dashboardSlice'
+import { selectedCurrentActiveDashboard, fetchDetailDashboard } from '../../redux/Slices/dashboardSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import DataField from './DataField'
 import DeviceControls from './DeviceControls'
 import ConfigModal from './ConfigModal'
 import {
-  triggerAPI,
   triggerFanAPI,
   triggerLightAPI,
-  triggerPumpAPI,
-  triggerSirenAPI,
-  setConfigAPI
+  triggerPumpAPI
 } from '../../apis/deviceApi'
 import SpaIcon from '@mui/icons-material/Spa'
 import { toast } from 'react-toastify'
-import { updateFan, updatePump, updateBuzzer, updateLight, updateConfig } from '../../redux/Slices/dashboardSlice'
+import { updateFan, updatePump, updateLight } from '../../redux/Slices/dashboardSlice'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -47,41 +41,40 @@ const Dashboard = () => {
   const handleToggleFan = async () => {
     const data = {
       deviceId: deviceId,
-      state: dashboard.fan === 'active' ? false : true
+      state: dashboard.fan === '1' ? false : true
     }
-    const response = await triggerFanAPI(data)
-    dispatch(updateFan(dashboard.fan === 'active' ? 'inactive' : 'active'))
-    return response
+    toast.promise(triggerFanAPI(data), {
+      pending: 'Turning on the fan...'
+    }
+    ).then(() => {
+      dispatch(updateFan(dashboard.fan === '1' ? '0' : '1'))
+    })
   }
 
   const handleToggleLight = async () => {
     const data = {
       deviceId: deviceId,
-      state: dashboard.light === 'active' ? false : true
+      state: dashboard.light === '1' ? false : true
     }
-    const response = await triggerLightAPI(data)
-    dispatch(updateLight(dashboard.light === 'active' ? 'inactive' : 'active'))
-    return response
+    toast.promise(triggerLightAPI(data), {
+      pending: 'Turning on the light...'
+    }
+    ).then(() => {
+      dispatch(updateLight(dashboard.light === '1' ? '0' : '1'))
+    })
   }
 
   const handleTogglePump = async () => {
     const data = {
       deviceId: deviceId,
-      state: dashboard.pump === 'active' ? false : true
+      state: dashboard.pump === '1' ? false : true
     }
-    const response = await triggerPumpAPI(data)
-    dispatch(updatePump(dashboard.pump === 'active' ? 'inactive' : 'active'))
-    return response
-  }
-
-  const handleToggleSiren = async () => {
-    const data = {
-      deviceId: deviceId,
-      state: dashboard.buzzer === 'active' ? false : true
+    toast.promise(triggerPumpAPI(data), {
+      pending: 'Turning on the pump...'
     }
-    const response = await triggerSirenAPI(data)
-    dispatch(updateBuzzer(dashboard.buzzer === 'active' ? 'inactive' : 'active'))
-    return response
+    ).then(() => {
+      dispatch(updatePump(dashboard.pump === '1' ? '0' : '1'))
+    })
   }
 
 
@@ -118,14 +111,12 @@ const Dashboard = () => {
           }}>
             <Box sx={{ width: '100%' }}>
               <DeviceControls
-                pumpStatus={dashboard.pump === 'active'}
-                fanStatus={dashboard.fan === 'active'}
-                lightStatus={dashboard.light === 'active'}
-                buzzerStatus={dashboard.buzzer === 'active'}
+                pumpStatus={dashboard.pump === '1'}
+                fanStatus={dashboard.fan === '1'}
+                lightStatus={dashboard.light === '1'}
                 onTogglePump={handleTogglePump}
                 onToggleFan={handleToggleFan}
                 onToggleLight={handleToggleLight}
-                onToggleSiren={handleToggleSiren}
                 onOpenConfig={() => setConfigModalOpen(true)}
               />
             </Box>

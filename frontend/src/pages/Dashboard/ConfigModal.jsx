@@ -9,7 +9,7 @@ import {
   Typography,
   Divider
 } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateConfig } from '../../redux/Slices/dashboardSlice'
 import { setConfigAPI } from '../../apis/deviceApi'
