@@ -103,3 +103,17 @@ export const updateProfileAPI = async (data) => {
   )
   return response.data
 }
+
+export const getStatusConfigAPI = async (deviceId) => {
+  const response = await authorizedAxios.get(
+    `${BASE_URL}/config/granted?deviceId=${deviceId}`
+  )
+  return response.data
+}
+
+export const setStatusConfigAPI = async (data) => {
+  const response = await authorizedAxios.post(
+    `${BASE_URL}/config/granted`, data
+  )
+  return response.data
+}

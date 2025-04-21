@@ -19,7 +19,6 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { getListDevicesAPI, addDeviceAPI } from '../../apis/deviceApi'
 import AddIcon from '@mui/icons-material/Add'
-import { object } from 'yup'
 
 const HomePage = () => {
   const theme = useTheme()
@@ -99,7 +98,7 @@ const HomePage = () => {
               textAlign: { xs: 'center', sm: 'left' }
             }}
           >
-                      Your Devices
+            Your Devices
           </Typography>
           <Button
             variant="contained"
@@ -111,7 +110,7 @@ const HomePage = () => {
               width: { xs: '100%', sm: 'auto' }
             }}
           >
-                      Add Device
+            Add Device
           </Button>
         </Box>
 
@@ -192,7 +191,7 @@ const HomePage = () => {
           fontWeight: 600,
           fontSize: { xs: '1.2rem', sm: '1.5rem' }
         }}>
-                  Add New Device
+          Add New Device
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -237,7 +236,7 @@ const HomePage = () => {
               width: { xs: '100%', sm: 'auto' }
             }}
           >
-                      Cancel
+            Cancel
           </Button>
           <Button
             variant="contained"
@@ -249,7 +248,7 @@ const HomePage = () => {
               width: { xs: '100%', sm: 'auto' }
             }}
           >
-                      Add Device
+            Add Device
           </Button>
         </DialogActions>
       </Dialog>

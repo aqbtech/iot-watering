@@ -7,7 +7,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Link } from 'react-router-dom'
 
-const DeviceItem = ({ device, onDelete, onView }) => {
+const DeviceItem = ({ device, onDelete }) => {
   const { name, location, temperature, light, humidity, soilMoisture, status } = device
 
   return (
@@ -25,8 +25,8 @@ const DeviceItem = ({ device, onDelete, onView }) => {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight="bold">{name}</Typography>
           <Chip
-            label={status === 'Active' ? 'Enable' : 'Disable'}
-            color={status === 'Active' ? 'success' : 'error'}
+            label={status === 'active' ? 'Enable' : 'Disable'}
+            color={status === 'active' ? 'success' : 'error'}
             size="small"
           />
         </Stack>
