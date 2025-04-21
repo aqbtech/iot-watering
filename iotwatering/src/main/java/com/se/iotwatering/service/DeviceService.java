@@ -55,4 +55,5 @@ public interface DeviceService {
      * @return Information about the device
      */
     DeviceInfoResponse getDeviceInfo(String deviceId);
+    DeviceInfoResponse getDeviceDetail(Long deviceId);
 }

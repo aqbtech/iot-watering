@@ -24,7 +24,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.socket.server.WebSocketService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -36,6 +38,7 @@ public class DeviceServiceImpl implements DeviceService {
 	private final Device2Sensor device2Sensor;
 	private final UserRepository userRepository;
 	private final CoreIotDeviceAttribute coreIotDeviceAttribute;
+	private final WebSocketClient webSocketService;
 
 	@Override
 	@Transactional
@@ -71,7 +74,12 @@ public class DeviceServiceImpl implements DeviceService {
 		sensorRepository.save(sensor);
 		// TODO: may be add sensor to user? or jpa will do it automatically?
 		log.info("Added new device with ID: {}", request.getCoreIotDeviceId());
-
+		// subscribe to device
+		try {
+			webSocketService.subscribeToDevice(request.getCoreIotDeviceId());
+		} catch (IOException e) {
+			throw new WebServerException(DeviceErrorCode.CAN_NOT_SUBSCRIBE_DEVICE);
+		}
 		return true;
 	}
 
@@ -117,26 +125,61 @@ public class DeviceServiceImpl implements DeviceService {
 	@Override
 	@Transactional
 	public boolean controlLight(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.LIGHT_CONTROL, request.isState());
+		String deviceId = sensorRepository.findById(request.getDeviceId())
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND)).getPureSensorId();
+		return updateDeviceComponentState(deviceId, CoreIotDefaultKey.LIGHT_CONTROL, request.isState());
 	}
 
 	@Override
 	@Transactional
 	public boolean controlPump(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.PUMP_CONTROL, request.isState());
+		String deviceId = sensorRepository.findById(request.getDeviceId())
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND)).getPureSensorId();
+		return updateDeviceComponentState(deviceId, CoreIotDefaultKey.PUMP_CONTROL, request.isState());
 	}
 
 	@Override
 	@Transactional
 	public boolean controlSiren(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.SIREN_CONTROL, request.isState());
+		String deviceId = sensorRepository.findById(request.getDeviceId())
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND)).getPureSensorId();
+		return updateDeviceComponentState(deviceId, CoreIotDefaultKey.SIREN_CONTROL, request.isState());
 	}
 
 	@Override
 	@Transactional
 	public boolean controlFan(DeviceStateRequest request) {
-		return updateDeviceComponentState(request.getDeviceId(), CoreIotDefaultKey.FAN_CONTROL, request.isState());
+		String deviceId = sensorRepository.findById(request.getDeviceId())
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND)).getPureSensorId();
+		return updateDeviceComponentState(deviceId, CoreIotDefaultKey.FAN_CONTROL, request.isState());
 	}
+	@Override
+	public DeviceInfoResponse getDeviceDetail(Long deviceId) {
+		// Find the sensor by device ID
+		Sensor sensor = sensorRepository.findById(deviceId)
+				.orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
+
+		Configuration config = sensor.getConfiguration();
+		if (config == null) throw new WebServerException(DeviceErrorCode.CONFIG_NOT_FOUND);
+
+
+		// Build response using the configuration getters
+		var result = DeviceInfoResponse.builder()
+				.name(sensor.getName())
+				.location(sensor.getLocation())
+				.fan(getComponentStatus(sensor, CoreIotDefaultKey.FAN_CONTROL))
+				.pump(getComponentStatus(sensor, CoreIotDefaultKey.PUMP_CONTROL))
+				.siren(getComponentStatus(sensor, CoreIotDefaultKey.SIREN_CONTROL))
+				.light(getComponentStatus(sensor, CoreIotDefaultKey.LIGHT_CONTROL))
+				// Use actual configuration values instead of defaults
+				.configFan(config.getHumidity())
+				.configLight(config.getLight())
+				.configSiren(config.getTemperature())
+				.configPump(config.getSoilMoisture())
+				.build();
+		return result;
+	}
+
 
 	@Override
 	public DeviceInfoResponse getDeviceInfo(String deviceId) {

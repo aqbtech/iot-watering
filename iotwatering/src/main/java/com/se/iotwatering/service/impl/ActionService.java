@@ -23,7 +23,7 @@ public class ActionService {
 
     public void sendEmail(String coreIotDeviceId, String htmlContent) {
         // fetch user email from the database
-        Sensor sensor = sensorRepository.findByPureSensorId(coreIotDeviceId)
+        Sensor sensor = sensorRepository.findWithUsersByPureSensorId(coreIotDeviceId)
                 .orElseThrow(() -> new WebServerException(DeviceErrorCode.DEVICE_NOT_FOUND));
         String subject = "Alert from your sensor: " + coreIotDeviceId;
         User user = sensor.getUsers().getFirst();
@@ -52,22 +52,23 @@ public class ActionService {
     }
 
     public void turnOnFan(Sensor sensor) {
-        deviceService.controlFan(new DeviceStateRequest(sensor.getPureSensorId(), true));
+
+        deviceService.controlFan(new DeviceStateRequest(sensor.getSensorId(), true));
     }
     public void turnOffFan(Sensor sensor) {
-        deviceService.controlFan(new DeviceStateRequest(sensor.getPureSensorId(), false));
+        deviceService.controlFan(new DeviceStateRequest(sensor.getSensorId(), false));
     }
     public void turnOnPump(Sensor sensor) {
-        deviceService.controlPump(new DeviceStateRequest(sensor.getPureSensorId(), true));
+        deviceService.controlPump(new DeviceStateRequest(sensor.getSensorId(), true));
     }
     public void turnOffPump(Sensor sensor) {
-        deviceService.controlPump(new DeviceStateRequest(sensor.getPureSensorId(), false));
+        deviceService.controlPump(new DeviceStateRequest(sensor.getSensorId(), false));
     }
     public void turnOnLight(Sensor sensor) {
-        deviceService.controlLight(new DeviceStateRequest(sensor.getPureSensorId(), true));
+        deviceService.controlLight(new DeviceStateRequest(sensor.getSensorId(), true));
     }
     public void turnOffLight(Sensor sensor) {
-        deviceService.controlLight(new DeviceStateRequest(sensor.getPureSensorId(), false));
+        deviceService.controlLight(new DeviceStateRequest(sensor.getSensorId(), false));
     }
 }
 

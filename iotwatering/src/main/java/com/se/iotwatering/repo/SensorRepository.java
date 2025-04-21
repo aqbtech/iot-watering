@@ -1,6 +1,7 @@
 package com.se.iotwatering.repo;
 
 import com.se.iotwatering.entity.Sensor;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ public interface SensorRepository extends JpaRepository<Sensor, Long> {
      * @return Optional containing the sensor if found
      */
     Optional<Sensor> findByPureSensorId(String pureSensorId);
+    @EntityGraph(attributePaths = "users")
+    Optional<Sensor> findWithUsersByPureSensorId(String pureSensorId);
     
     /**
      * Check if a sensor with the given device ID exists
