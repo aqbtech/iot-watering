@@ -60,7 +60,7 @@ public class DeviceServiceImpl implements DeviceService {
 
 		// assign current user for this device(sensor)
 		String currentUserName = SecurityUtil.getCurrentUsername();
-		if (currentUserName == null) throw new WebServerException(AuthErrorCode.UNAUTHENTICATED);
+
 		User user = userRepository.findByUsername(currentUserName)
 				.orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
 		List<User> users = List.of(user);

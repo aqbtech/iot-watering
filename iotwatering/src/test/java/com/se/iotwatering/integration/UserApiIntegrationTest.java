@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -116,6 +117,7 @@ public class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = TEST_USERNAME)
     void testUpdateUserProfile() throws Exception {
         // First, login to get an authentication token
         String token = loginAndGetToken();

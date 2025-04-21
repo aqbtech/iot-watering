@@ -9,6 +9,7 @@ import com.se.iotwatering.exception.UserErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.UserRepository;
 import com.se.iotwatering.service.UserService;
+import com.se.iotwatering.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean updateProfile(UserProfileUpdateRequest request) {
-        // Get a current authenticated user (typically would be from a security context)
-        // For demonstration, we'll use a placeholder method
-        String username = getCurrentUsername();
+        String username = SecurityUtil.getCurrentUsername();
         
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
