@@ -16,14 +16,8 @@ export const injectStore = (mainStore) => {
 }
 
 const redirectToLogin = () => {
-    window.location.href = '/Login'
+  window.location.href = '/Login'
 }
-
-export const axiosPublic = axios.create({
-  baseURL: BASE_URL,
-  timeout: 1000 * 60 * 10
-})
-axiosPublic.defaults.withCredentials = false
 
 let authorizedAxios = axios.create({})
 
@@ -46,57 +40,57 @@ authorizedAxios.interceptors.request.use(
 
 // đánh chặn khi nhận response
 authorizedAxios.interceptors.response.use(
-    (response) => {
-      return response
-    },
-    (error) => {
-      const currentToken = axiosReduxStore.getState().user.currentUser?.token
+  (response) => {
+    return response
+  },
+  (error) => {
+    const currentToken = axiosReduxStore.getState().user.currentUser?.token
 
-      if (error.response?.status === 401 && currentToken) {
-        const refreshToken = currentToken // Sử dụng token hiện tại như refresh token
+    if (error.response?.status === 401 && currentToken) {
+      const refreshToken = currentToken // Sử dụng token hiện tại như refresh token
 
-        // Kiểm tra nếu request đã retry rồi thì không retry nữa để tránh vòng lặp vô hạn
-        if (error.config._retry) {
-          navigate('/login')
-          return Promise.reject(error)
-        }
-        error.config._retry = true
-
-        return refreshTokenAPI(refreshToken)
-            .then((res) => {
-              const newAccessToken = res.result.token
-              if (newAccessToken) {
-                // Cập nhật Redux
-                const currentUser = axiosReduxStore.getState().user.currentUser
-                axiosReduxStore.dispatch(updateCurrentUser({ ...currentUser, token: newAccessToken }))
-
-                // Cập nhật token mới vào header và gọi lại request
-                error.config.headers.Authorization = `Bearer ${newAccessToken}`
-                return authorizedAxios(error.config)
-              } else {
-                axiosReduxStore.dispatch(updateCurrentUser(null))
-                redirectToLogin()
-                return Promise.reject(error)
-              }
-            })
-            .catch((err) => {
-              axiosReduxStore.dispatch(updateCurrentUser(null))
-              redirectToLogin()
-              return Promise.reject(err)
-            })
+      // Kiểm tra nếu request đã retry rồi thì không retry nữa để tránh vòng lặp vô hạn
+      if (error.config._retry) {
+        navigate('/login')
+        return Promise.reject(error)
       }
+      error.config._retry = true
 
-      // Xử lý lỗi chung
-      let errorMessage = error?.message
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message
-      }
-      if (error.response?.status !== 410) {
-        toast.error(errorMessage)
-      }
+      return refreshTokenAPI(refreshToken)
+        .then((res) => {
+          const newAccessToken = res.result.token
+          if (newAccessToken) {
+            // Cập nhật Redux
+            const currentUser = axiosReduxStore.getState().user.currentUser
+            axiosReduxStore.dispatch(updateCurrentUser({ ...currentUser, token: newAccessToken }))
 
-      return Promise.reject(error)
+            // Cập nhật token mới vào header và gọi lại request
+            error.config.headers.Authorization = `Bearer ${newAccessToken}`
+            return authorizedAxios(error.config)
+          } else {
+            axiosReduxStore.dispatch(updateCurrentUser(null))
+            redirectToLogin()
+            return Promise.reject(error)
+          }
+        })
+        .catch((err) => {
+          axiosReduxStore.dispatch(updateCurrentUser(null))
+          redirectToLogin()
+          return Promise.reject(err)
+        })
     }
+
+    // Xử lý lỗi chung
+    let errorMessage = error?.message
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message
+    }
+    if (error.response?.status !== 410) {
+      toast.error(errorMessage)
+    }
+
+    return Promise.reject(error)
+  }
 )
 
 

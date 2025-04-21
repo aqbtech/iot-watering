@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
 import authorizedAxios from '../../util/authorizeAxios'
 import { BASE_URL } from '../../util/constant'
 
@@ -27,15 +26,33 @@ export const activeDashboardSlice = createSlice({
     },
     updateState: (state, action) => {
       state.currentDashboard.status = action.payload
+    },
+    updateFan: (state, action) => {
+      state.currentDashboard.fan = action.payload
+    },
+    updateLight: (state, action) => {
+      state.currentDashboard.light = action.payload
+    },
+    updatePump: (state, action) => {
+      state.currentDashboard.pump = action.payload
+    },
+    updateBuzzer: (state, action) => {
+      state.currentDashboard.buzzer = action.payload
+    },
+    updateConfig: (state, action) => {
+      state.currentDashboard.configFan = action.payload.temperature
+      state.currentDashboard.configPump = action.payload.humidity
+      state.currentDashboard.configSiren = action.payload.soilMoisture
+      state.currentDashboard.configLight = action.payload.light
     }
   },
   extraReducers: (builder) => {
     builder
-      // .addCase(fetchDetailDashboard.fulfilled, (state, action) => {
-      //   // xử lý dữ liệu khi gọi API thành công, action.payload là dữ liệu trả về từ hàm trên
-      //   const fullDashboard = action.payload
+    // .addCase(fetchDetailDashboard.fulfilled, (state, action) => {
+    //   // xử lý dữ liệu khi gọi API thành công, action.payload là dữ liệu trả về từ hàm trên
+    //   const fullDashboard = action.payload
 
-      //   //xử lý dữ liệu....
+    //   //xử lý dữ liệu....
 
       //   //update lại dữ liệu
       //   state.currentDashboard = fullDashboard
@@ -46,7 +63,7 @@ export const activeDashboardSlice = createSlice({
   }
 })
 
-export const { updateCurrentActiveDashboard, updateState} = activeDashboardSlice.actions
+export const { updateCurrentActiveDashboard, updateState, updateFan, updateLight, updatePump, updateBuzzer, updateConfig } = activeDashboardSlice.actions
 
 export const selectedCurrentActiveDashboard = (state) =>
   state.activedashboard.currentDashboard

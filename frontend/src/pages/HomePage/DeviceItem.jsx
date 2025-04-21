@@ -1,33 +1,33 @@
-import { Box, Card, CardContent, Stack, Typography, Button, Chip } from "@mui/material";
-import WaterDropOutlinedIcon from "@mui/icons-material/WaterDropOutlined";
-import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
-import SpaOutlinedIcon from "@mui/icons-material/SpaOutlined";
-import ThermostatOutlinedIcon from "@mui/icons-material/ThermostatOutlined";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Box, Card, CardContent, Stack, Typography, Button, Chip } from '@mui/material'
+import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
+import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined'
+import SpaOutlinedIcon from '@mui/icons-material/SpaOutlined'
+import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import { Link } from 'react-router-dom'
 
 const DeviceItem = ({ device, onDelete, onView }) => {
-  const { name, location, temperature, light, humidity, soilMoisture, status } = device;
-  
+  const { name, location, temperature, light, humidity, soilMoisture, status } = device
+
   return (
     <Card
       sx={{
         width: 300,
         padding: 2,
         borderRadius: 4,
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        background: "#FFFFFF",
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+        background: '#FFFFFF'
       }}
     >
       <CardContent>
         {/* Tiêu đề thiết bị */}
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight="bold">{name}</Typography>
-          <Chip 
-            label={status === 'Active' ? "Enable" : "Disable"} 
-            color={status === 'Active' ? "success" : "error"} 
-            size="small" 
+          <Chip
+            label={status === 'Active' ? 'Enable' : 'Disable'}
+            color={status === 'Active' ? 'success' : 'error'}
+            size="small"
           />
         </Stack>
 
@@ -60,21 +60,21 @@ const DeviceItem = ({ device, onDelete, onView }) => {
 
         {/* Nút thao tác */}
         <Stack direction="row" justifyContent="space-between" mt={2}>
-          <Button 
-            variant="outlined" 
-            color="error" 
-            size="small" 
+          <Button
+            variant="outlined"
+            color="error"
+            size="small"
             startIcon={<DeleteOutlineIcon />}
             onClick={() => onDelete(device)}
           >
             Xóa
           </Button>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            size="small" 
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
             startIcon={<VisibilityIcon />}
-            component={Link} 
+            component={Link}
             to={`/Dashboard/${device.deviceId}`}
           >
             Xem chi tiết
@@ -82,7 +82,7 @@ const DeviceItem = ({ device, onDelete, onView }) => {
         </Stack>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default DeviceItem;
+export default DeviceItem

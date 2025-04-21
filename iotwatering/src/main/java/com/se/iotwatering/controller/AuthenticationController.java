@@ -12,10 +12,7 @@ import com.se.iotwatering.dto.http.response.ResponseAPITemplate;
 import com.se.iotwatering.service.AuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
@@ -58,6 +55,13 @@ public class AuthenticationController {
 			throws ParseException, JOSEException {
 		authService.logout(request);
 		return ResponseAPITemplate.<Void>builder()
+				.build();
+	}
+
+	@GetMapping("/monitor")
+	ResponseAPITemplate<String> monitor() {
+		return ResponseAPITemplate.<String>builder()
+				.result("OK")
 				.build();
 	}
 }

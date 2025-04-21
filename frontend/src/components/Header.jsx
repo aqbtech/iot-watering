@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { logoutUserAPI } from '../redux/Slices/userSlice'
 import { useSelector } from 'react-redux'
-import { selectCurrentUser, updateCurrentUser} from '../redux/Slices/userSlice'
+import { selectCurrentUser, updateCurrentUser } from '../redux/Slices/userSlice'
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -41,17 +41,11 @@ const Header = () => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton>
-            <img src={assets.bell_ring} alt="bell" style={{ height: 24 }} />
-          </IconButton>
-          <IconButton>
+          <IconButton onClick={handleMenuOpen}>
             <img src={assets.account} alt="user" style={{ height: 24 }} />
           </IconButton>
-          <IconButton onClick={handleMenuOpen}>
-            <img src={assets.menu} alt="menu" style={{ height: 24 }} />
-          </IconButton>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose} sx={{ mt: 1 }}>
-            <MenuItem component={Link} to="/myProfile" onClick={handleMenuClose}>
+            <MenuItem component={Link} to="/Profile" onClick={handleMenuClose}>
               My Profile
             </MenuItem>
             <MenuItem onClick={handleLogout}>Logout</MenuItem>

@@ -1,9 +1,8 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.se.iotwatering.config.CoreIotConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;

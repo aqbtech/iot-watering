@@ -1,10 +1,13 @@
 package com.se.iotwatering.controller;
 
+import com.se.iotwatering.dto.http.request.UserProfileUpdateRequest;
 import com.se.iotwatering.dto.http.request.UserRegister;
 import com.se.iotwatering.dto.http.response.MinimalUserProfile;
 import com.se.iotwatering.dto.http.response.ResponseAPITemplate;
+import com.se.iotwatering.dto.http.response.UserProfileResponse;
 import com.se.iotwatering.service.GuestService;
-import com.se.iotwatering.service.WebSocketClient;
+import com.se.iotwatering.service.UserService;
+import com.se.iotwatering.service.impl.WebSocketClient;
 import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 	private final GuestService guestService;
+	private final UserService userService;
 	private WebSocketClient webSocketClient;
 
 	@PostMapping("/register")
@@ -42,5 +46,21 @@ public class UserController {
 	@GetMapping("/dashboard")
 	public ResponseEntity<?> dashboard(ServletRequest request) {
 		return ResponseEntity.ok().build();
+	}
+	
+	@PutMapping("/profile")
+	public ResponseAPITemplate<?> updateProfile(@RequestBody UserProfileUpdateRequest request) {
+		boolean result = userService.updateProfile(request);
+		return ResponseAPITemplate.builder()
+				.result(result ? "Cập nhật thành công" : "Không thể cập nhật hồ sơ")
+				.build();
+	}
+	
+	@GetMapping("/profile/{username}")
+	public ResponseAPITemplate<UserProfileResponse> getUserProfile(@PathVariable String username) {
+		UserProfileResponse profile = userService.getUserProfile(username);
+		return ResponseAPITemplate.<UserProfileResponse>builder()
+				.result(profile)
+				.build();
 	}
 }
