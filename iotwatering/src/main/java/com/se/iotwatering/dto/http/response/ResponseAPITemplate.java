@@ -12,9 +12,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseAPITemplate<T> {
-	@Builder.Default
-	private int code = 200;
-	@Builder.Default
-	private String message = "Success";
-	private T result;
+    @Builder.Default
+    private int code = 200;
+
+    @Builder.Default
+    private String message = "Success";
+
+    private T result;
+
+    // ✅ Cho các lỗi: 
+    private Integer status;
+    private String path;
+    private String timestamp;
 }

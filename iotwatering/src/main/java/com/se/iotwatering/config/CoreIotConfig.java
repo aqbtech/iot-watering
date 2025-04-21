@@ -1,7 +1,6 @@
 package com.se.iotwatering.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.se.iotwatering.service.CoreIotRestClient;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

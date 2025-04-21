@@ -1,7 +1,7 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.se.iotwatering.entity.Sensor;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.BaseErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.SensorRepo;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -35,7 +35,7 @@ public class DeviceStartupService {
         try {
             webSocketService.subscribeToDevice("2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
         } catch (IOException e) {
-            throw new WebServerException(ErrorCode.UNKNOWN_ERROR);
+            throw new WebServerException(BaseErrorCode.UNKNOWN_ERROR);
         }
 
         // Subscribe từng thiết bị vào WebSocket

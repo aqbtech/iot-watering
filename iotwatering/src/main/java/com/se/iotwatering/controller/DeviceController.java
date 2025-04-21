@@ -1,15 +1,13 @@
 package com.se.iotwatering.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.se.iotwatering.dto.DeviceInfo;
 import com.se.iotwatering.dto.SensorData;
-import com.se.iotwatering.dto.SensorDataDTO;
 import com.se.iotwatering.dto.SensorDetailResponse;
 import com.se.iotwatering.dto.http.response.ResponseAPITemplate;
-import com.se.iotwatering.service.DataPollingService;
-import com.se.iotwatering.service.DeviceControllerService;
-import com.se.iotwatering.service.TelemetryService;
-import com.se.iotwatering.service.WebSocketClient;
+import com.se.iotwatering.service.impl.DataPollingService;
+import com.se.iotwatering.service.impl.DeviceControllerService;
+import com.se.iotwatering.service.impl.TelemetryService;
+import com.se.iotwatering.service.impl.WebSocketClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
 import java.time.Duration;

@@ -22,12 +22,8 @@ public class Security {
 	// This class is used to configure security for the application
 	// If you want to use security, you can add configurations here
 	private final String[] PUBLIC_ENDPOINTS = {
-			"/users", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-			"user/v1/register",
-			"/search", "/search/filter", "/category", "/shop_information", "/shop_product",
-			"/sellerregister",
-			"/search", "/search/filter", "/category", "/shop_information", "/shop_product",
-			"/create", "/checkout", "/**"
+			"/auth/token", "/auth/introspect", "/auth/refresh",
+			"user/v1/register"
 	};
 	private final CustomJwtDecoder customJwtDecoder;
 

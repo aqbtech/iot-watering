@@ -1,4 +1,4 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -14,10 +14,13 @@ import com.se.iotwatering.dto.http.request.RefreshRequest;
 import com.se.iotwatering.dto.http.response.AuthenticationResponse;
 import com.se.iotwatering.dto.http.response.IntrospectResponse;
 import com.se.iotwatering.entity.InvalidatedToken;
+import com.se.iotwatering.exception.AuthErrorCode;
 import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.UserErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.InvalidatedTokenRepository;
 import com.se.iotwatering.repo.UserRepository;
+import com.se.iotwatering.service.AuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -75,7 +78,11 @@ public class AuthenticationService implements AuthenticationProvider {
 //		}
 //		var token = generateToken(user.getFirst()[0].toString(), user.getFirst()[2].toString());
 		var user = userRepository.findByUsername(request.getUsername())
-				.orElseThrow(() -> new WebServerException(ErrorCode.USER_NOT_FOUND));
+				.orElseThrow(() -> new WebServerException(UserErrorCode.USER_NOT_FOUND));
+		boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+		if (!authenticated) {
+			throw new WebServerException(AuthErrorCode.UNAUTHENTICATED);
+		}
 		var token = generateToken(user.getUsername(), SystemConstant.ROLE_USER);
 		return AuthenticationResponse.builder()
 				.token(token.get("token"))
@@ -113,7 +120,7 @@ public class AuthenticationService implements AuthenticationProvider {
 
 		var username = signedJWT.getJWTClaimsSet().getSubject();
 		if (!userRepository.existsByUsername(username))
-			throw new WebServerException(ErrorCode.USER_NOT_FOUND);
+			throw new WebServerException(UserErrorCode.USER_NOT_FOUND);
 		var token = generateToken(username, signedJWT.getJWTClaimsSet().getClaim("authorities").toString());
 		return AuthenticationResponse.builder()
 				.token(token.get("token"))
@@ -157,12 +164,12 @@ public class AuthenticationService implements AuthenticationProvider {
 
 		var verified = signedJWT.verify(verifier);
 		if (!verified && expirationTime.after(new Date())) {
-			throw new WebServerException(ErrorCode.UNAUTHENTICATED);
+			throw new WebServerException(AuthErrorCode.UNAUTHENTICATED);
 		}
 		// check if token is invalidated
 		if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
-			throw new WebServerException(ErrorCode.UNAUTHENTICATED);
-//			 throw new WebServerException(ErrorCode.INVALID_TOKEN);
+//			throw new WebServerException(ErrorCode.UNAUTHENTICATED);
+			 throw new WebServerException(AuthErrorCode.INVALID_TOKEN);
 		}
 		return signedJWT;
 	}

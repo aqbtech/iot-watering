@@ -1,12 +1,13 @@
-package com.se.iotwatering.service;
+package com.se.iotwatering.service.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.se.iotwatering.entity.SensorData;
-import com.se.iotwatering.exception.ErrorCode;
+import com.se.iotwatering.exception.BaseErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.mapper.SensorPayload;
 import com.se.iotwatering.repo.SensorDataRepo;
+import com.se.iotwatering.service.DataObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class HandlerDataWare implements DataObserver {
 			return sensorData;
 		} catch (Exception e) {
 			log.error("Error when mapping payload to SensorData: {}", e.getMessage());
-			throw new WebServerException(ErrorCode.UNKNOWN_ERROR);
+			throw new WebServerException(BaseErrorCode.UNKNOWN_ERROR);
 		}
 	}
 }
