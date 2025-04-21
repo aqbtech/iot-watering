@@ -2,6 +2,7 @@ package com.se.iotwatering.service.impl;
 
 import com.se.iotwatering.entity.Sensor;
 import com.se.iotwatering.exception.BaseErrorCode;
+import com.se.iotwatering.exception.DeviceErrorCode;
 import com.se.iotwatering.exception.WebServerException;
 import com.se.iotwatering.repo.SensorRepo;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -31,22 +32,26 @@ public class DeviceStartupService {
         List<Sensor> devices = deviceRepository.findAll();
         System.out.println("Tìm thấy " + devices.size() + " thiết bị trong database.");
 
-        System.out.println("Subscribing device: " + "2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
-        try {
-            webSocketService.subscribeToDevice("2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
-        } catch (IOException e) {
-            throw new WebServerException(BaseErrorCode.UNKNOWN_ERROR);
-        }
+//        System.out.println("Subscribing device: " + "2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
+//        try {
+//            for (Sensor device : devices) {
+//                System.out.println("Subscribing device: " + device.getName());
+//                webSocketService.subscribeToDevice(device.getPureSensorId());
+//            }
+////            webSocketService.subscribeToDevice("2b1ab270-f29a-11ef-87b5-21bccf7d29d5");
+//        } catch (IOException e) {
+//            throw new WebServerException(DeviceErrorCode.CAN_NOT_SUBSCRIBE_DEVICE);
+//        }
 
         // Subscribe từng thiết bị vào WebSocket
-//		devices.forEach(device -> {
-//			System.out.println("Subscribing device: " + device.getName());
-//			try {
-//				webSocketService.subscribeToDevice(device.getPureSensorId());
-//			} catch (IOException e) {
-//				throw new WebServerException(ErrorCode.UNKNOWN_ERROR);
-//			}
-//		});
+		devices.forEach(device -> {
+			System.out.println("Subscribing device: " + device.getName());
+			try {
+				webSocketService.subscribeToDevice(device.getPureSensorId());
+			} catch (IOException e) {
+				throw new WebServerException(DeviceErrorCode.CAN_NOT_SUBSCRIBE_DEVICE);
+			}
+		});
 
         System.out.println("Tất cả thiết bị đã được subscribe thành công.");
     }

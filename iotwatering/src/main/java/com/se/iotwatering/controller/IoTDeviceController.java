@@ -72,4 +72,11 @@ public class IoTDeviceController {
 				.result(deviceInfo)
 				.build();
 	}
+	@GetMapping("/info/v2")
+	public ResponseAPITemplate<DeviceInfoResponse> getDeviceInfo(@RequestParam Long deviceId) {
+		DeviceInfoResponse deviceInfo = deviceService.getDeviceDetail(deviceId);
+		return ResponseAPITemplate.<DeviceInfoResponse>builder()
+				.result(deviceInfo)
+				.build();
+	}
 }
