@@ -62,7 +62,7 @@ const HistoryTable = ({ deviceId }) => {
   }
 
   const formatNumber = (value) => {
-    return value.toString().slice(0, 2) // Lấy 2 ký tự đầu
+    return value?.toString().slice(0, 2) // Lấy 2 ký tự đầu
   }
 
   const handleRefresh = () => {

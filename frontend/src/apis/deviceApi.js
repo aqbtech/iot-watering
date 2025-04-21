@@ -46,30 +46,30 @@ export const triggerAPI = async (deviceId) => {
   return response
 }
 
-export const triggerFanAPI = async (deviceId) => {
+export const triggerFanAPI = async (data) => {
   const response = await authorizedAxios.post(
-    `${BASE_URL}/device/fan?dvcId=${deviceId}`
+    `${BASE_URL}/device/fan`, data
   )
   return response
 }
 
-export const triggerLightAPI = async (deviceId) => {
+export const triggerLightAPI = async (data) => {
   const response = await authorizedAxios.post(
-    `${BASE_URL}/device/light?dvcId=${deviceId}`
+    `${BASE_URL}/device/light`, data
   )
   return response
 }
 
-export const triggerPumpAPI = async (deviceId) => {
+export const triggerPumpAPI = async (data) => {
   const response = await authorizedAxios.post(
-    `${BASE_URL}/device/siren?dvcId=${deviceId}`
+    `${BASE_URL}/device/pump`, data
   )
   return response
 }
 
-export const triggerSirenAPI = async (deviceId) => {
+export const triggerSirenAPI = async (data) => {
   const response = await authorizedAxios.post(
-    `${BASE_URL}/device/siren?dvcId=${deviceId}`
+    `${BASE_URL}/device/siren`, data
   )
   return response
 }
@@ -83,7 +83,7 @@ export const setConfigAPI = async (data) => {
 
 export const addDeviceAPI = async (data) => {
   const response = await authorizedAxios.post(
-    `${BASE_URL}/device/v1/add-device`,
+    `${BASE_URL}/device/add`,
     data
   )
   return response.data

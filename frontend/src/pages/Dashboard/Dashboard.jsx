@@ -16,9 +16,18 @@ import { useParams } from 'react-router-dom'
 import DataField from './DataField'
 import DeviceControls from './DeviceControls'
 import ConfigModal from './ConfigModal'
-import { triggerAPI, triggerFanAPI, triggerLightAPI, triggerPumpAPI, triggerSirenAPI, setConfigAPI } from '../../apis/deviceApi'
+import {
+  triggerAPI,
+  triggerFanAPI,
+  triggerLightAPI,
+  triggerPumpAPI,
+  triggerSirenAPI,
+  setConfigAPI
+} from '../../apis/deviceApi'
 import SpaIcon from '@mui/icons-material/Spa'
 import { toast } from 'react-toastify'
+import { updateFan, updatePump, updateBuzzer, updateLight, updateConfig } from '../../redux/Slices/dashboardSlice'
+
 const Dashboard = () => {
   const dispatch = useDispatch()
   const { deviceId } = useParams()
@@ -36,25 +45,41 @@ const Dashboard = () => {
   }
 
   const handleToggleFan = async () => {
-    const response = await triggerFanAPI(deviceId)
+    const data = {
+      deviceId: deviceId,
+      state: dashboard.fan === 'active' ? false : true
+    }
+    const response = await triggerFanAPI(data)
     dispatch(updateFan(dashboard.fan === 'active' ? 'inactive' : 'active'))
     return response
   }
 
   const handleToggleLight = async () => {
-    const response = await triggerLightAPI(deviceId)
+    const data = {
+      deviceId: deviceId,
+      state: dashboard.light === 'active' ? false : true
+    }
+    const response = await triggerLightAPI(data)
     dispatch(updateLight(dashboard.light === 'active' ? 'inactive' : 'active'))
     return response
   }
 
   const handleTogglePump = async () => {
-    const response = await triggerPumpAPI(deviceId)
+    const data = {
+      deviceId: deviceId,
+      state: dashboard.pump === 'active' ? false : true
+    }
+    const response = await triggerPumpAPI(data)
     dispatch(updatePump(dashboard.pump === 'active' ? 'inactive' : 'active'))
     return response
   }
 
   const handleToggleSiren = async () => {
-    const response = await triggerSirenAPI(deviceId)
+    const data = {
+      deviceId: deviceId,
+      state: dashboard.buzzer === 'active' ? false : true
+    }
+    const response = await triggerSirenAPI(data)
     dispatch(updateBuzzer(dashboard.buzzer === 'active' ? 'inactive' : 'active'))
     return response
   }
@@ -75,7 +100,7 @@ const Dashboard = () => {
             gap: 2,
             mb: 4
           }}>
-            <SpaIcon sx={{ fontSize: 40, color: '#2E7D32' }} />
+            <SpaIcon sx={{ fontSize: 40, color: '#2E7D32' }}/>
             <Typography variant="h4" sx={{
               fontWeight: 600,
               color: '#2E7D32',
