@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { getListDevicesAPI, addDeviceAPI } from '../../apis/deviceApi'
 import AddIcon from '@mui/icons-material/Add'
+import { object } from 'yup'
 
 const HomePage = () => {
   const theme = useTheme()
@@ -30,6 +31,8 @@ const HomePage = () => {
   const [openAddModal, setOpenAddModal] = useState(false)
   const [newDeviceId, setNewDeviceId] = useState('')
   const [newNameDevice, setNewNameDevice] = useState('')
+  const [newLocation, setNewLocation] = useState('')
+  const [newStatus, setNewStatus] = useState('active')
 
   const getListDevice = async (page) => {
     toast.promise(
@@ -48,8 +51,14 @@ const HomePage = () => {
   }, [page])
 
   const handleAddDevice = () => {
+    const data = {
+      deviceLocation: newLocation,
+      deviceName: newNameDevice,
+      deviceStatus: newStatus,
+      device_id: newDeviceId
+    }
     toast.promise(
-      addDeviceAPI(newDeviceId, newNameDevice),
+      addDeviceAPI(data),
       {
         pending: 'Adding device...',
         success: 'Device added successfully!'
@@ -68,7 +77,7 @@ const HomePage = () => {
       background: 'linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%)',
       pb: { xs: 3, sm: 4, md: 6 }
     }}>
-      <Header />
+      <Header/>
 
       <Container maxWidth="lg" sx={{
         pt: { xs: 2, sm: 3, md: 4 },
@@ -90,11 +99,11 @@ const HomePage = () => {
               textAlign: { xs: 'center', sm: 'left' }
             }}
           >
-            Your Devices
+                      Your Devices
           </Typography>
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
+            startIcon={<AddIcon/>}
             onClick={() => setOpenAddModal(true)}
             sx={{
               bgcolor: '#2E7D32',
@@ -102,7 +111,7 @@ const HomePage = () => {
               width: { xs: '100%', sm: 'auto' }
             }}
           >
-            Add Device
+                      Add Device
           </Button>
         </Box>
 
@@ -111,7 +120,7 @@ const HomePage = () => {
           <Grid container spacing={{ xs: 2, sm: 3 }}>
             {listDevice.map((device) => (
               <Grid item xs={12} sm={6} md={4} key={device.deviceId}>
-                <DeviceItem device={device} />
+                <DeviceItem device={device}/>
               </Grid>
             ))}
           </Grid>
@@ -127,10 +136,10 @@ const HomePage = () => {
             }}
           >
             <Typography variant={isMobile ? 'body1' : 'h6'} sx={{ color: '#666', mb: 1 }}>
-              No devices found
+                          No devices found
             </Typography>
             <Typography variant="body2" sx={{ color: '#888' }}>
-              Add your first device to get started
+                          Add your first device to get started
             </Typography>
           </Box>
         )}
@@ -183,7 +192,7 @@ const HomePage = () => {
           fontWeight: 600,
           fontSize: { xs: '1.2rem', sm: '1.5rem' }
         }}>
-          Add New Device
+                  Add New Device
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -206,6 +215,16 @@ const HomePage = () => {
             size={isMobile ? 'small' : 'medium'}
           />
         </DialogContent>
+        <DialogContent sx={{ mt: -2 }}>
+          <TextField
+            fullWidth
+            label="Device Location"
+            value={newLocation}
+            onChange={(e) => setNewLocation(e.target.value)}
+            placeholder="Enter device location"
+            size={isMobile ? 'small' : 'medium'}
+          />
+        </DialogContent>
         <DialogActions sx={{
           p: { xs: 1.5, sm: 2 },
           gap: { xs: 0.5, sm: 1 },
@@ -218,7 +237,7 @@ const HomePage = () => {
               width: { xs: '100%', sm: 'auto' }
             }}
           >
-            Cancel
+                      Cancel
           </Button>
           <Button
             variant="contained"
@@ -230,7 +249,7 @@ const HomePage = () => {
               width: { xs: '100%', sm: 'auto' }
             }}
           >
-            Add Device
+                      Add Device
           </Button>
         </DialogActions>
       </Dialog>

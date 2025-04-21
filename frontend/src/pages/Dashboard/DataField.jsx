@@ -5,8 +5,10 @@ import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined'
 import SpaOutlinedIcon from '@mui/icons-material/SpaOutlined'
 import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined'
 import DataFrame from './dataFrame.jsx'
-import { getLatestDataAPI } from '../../apis/deviceApi'
 import { BASE_URL } from '../../util/constant.js'
+import { EventSourcePolyfill } from 'event-source-polyfill'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '../../redux/Slices/userSlice.js'
 
 const DataField = ({ deviceId }) => {
   const [data, setData] = useState({
@@ -18,12 +20,19 @@ const DataField = ({ deviceId }) => {
     Humidity: '--'
   })
   const [error, setError] = useState(false) // Trạng thái lỗi
+  const user = useSelector(selectCurrentUser)
+  const token = user?.token
 
   useEffect(() => {
     let eventSource
 
     const connect = () => {
-      eventSource = new EventSource(`${BASE_URL}/device/v1/events?deviceId=${deviceId}`)
+      eventSource = new EventSourcePolyfill(`${BASE_URL}/device/v1/events?deviceId=${deviceId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+
+      })
 
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data)
@@ -101,7 +110,7 @@ const DataField = ({ deviceId }) => {
         ))}
       </Box>
       <Typography variant="subtitle1" sx={{ color: 'gray' }}>
-        Updated: {formatTime(data.updatedTime)}
+                Updated: {formatTime(data.updatedTime)}
       </Typography>
     </Box>
   )

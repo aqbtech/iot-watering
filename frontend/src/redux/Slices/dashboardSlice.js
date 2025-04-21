@@ -11,7 +11,7 @@ export const fetchDetailDashboard = createAsyncThunk(
   'activeDashboard/fetchDetailDashboard',
   async (deviceId) => {
     const response = await authorizedAxios.get(
-      `${BASE_URL}/device/v1/detail?dvcId=${deviceId}`
+      `${BASE_URL}/device/info/v2?deviceId=${deviceId}`
     )
     return response.data.result
   }
@@ -54,16 +54,24 @@ export const activeDashboardSlice = createSlice({
 
     //   //xử lý dữ liệu....
 
-      //   //update lại dữ liệu
-      //   state.currentDashboard = fullDashboard
-      // })
+    //   //update lại dữ liệu
+    //   state.currentDashboard = fullDashboard
+    // })
       .addCase(fetchDetailDashboard.fulfilled, (state, action) => {
         state.currentDashboard = { ...action.payload, data: null } // Ban đầu data = null
       })
   }
 })
 
-export const { updateCurrentActiveDashboard, updateState, updateFan, updateLight, updatePump, updateBuzzer, updateConfig } = activeDashboardSlice.actions
+export const {
+  updateCurrentActiveDashboard,
+  updateState,
+  updateFan,
+  updateLight,
+  updatePump,
+  updateBuzzer,
+  updateConfig
+} = activeDashboardSlice.actions
 
 export const selectedCurrentActiveDashboard = (state) =>
   state.activedashboard.currentDashboard
