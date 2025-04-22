@@ -1,20 +1,23 @@
 package com.se.iotwatering.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.se.iotwatering.service.CoreIotRestClient;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CoreIotConfig {
+//	private final CoreIotRestClient coreIotRestClient;
 	@Value("${coreiot.username}")
 	private String username;
 	@Value("${coreiot.password}")
@@ -24,9 +27,16 @@ public class CoreIotConfig {
 	private String token;
 	@Getter
 	private String refreshToken;
-	private final CoreIotRestClient coreIotRestClient;
-	protected CoreIotConfig(CoreIotRestClient coreIotRestClient) {
-		this.coreIotRestClient = coreIotRestClient;
+	private final WebClient webClient;
+
+	public String login(String username, String password, String url) {
+	return webClient.post()
+			.uri(url)
+			.header("Content-Type", "application/json")
+			.bodyValue(Map.of("username", username, "password", password))
+			.retrieve()
+			.bodyToMono(String.class)
+			.block();
 	}
 	@PostConstruct
 	private void processLogin() {
@@ -36,8 +46,8 @@ public class CoreIotConfig {
 		Assert.notNull(url, "Url must not be null");
 		// process login
 		// url = "https://app.coreiot.io/api/auth/login";
-		String endpoint = "https://"+ url + "/api/auth/login";
-		var jsonString = coreIotRestClient.login(username, password, endpoint);
+		String endpoint = "https://" + url + "/api/auth/login";
+		var jsonString = login(username, password, endpoint);
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			var map = objectMapper.readValue(jsonString, Map.class);
@@ -52,7 +62,7 @@ public class CoreIotConfig {
 		Assert.notNull(token, "Token is null, Login to coreiot failed!");
 	}
 
-	public String getJwtToken(){
+	public String getJwtToken() {
 		return token;
 	}
 

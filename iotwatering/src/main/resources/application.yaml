@@ -9,9 +9,26 @@ spring:
     jpa:
         hibernate:
             ddl-auto: ${DDL_AUTO:update}
-        show-sql: true
+        show-sql: false
 
+security:
+    cors:
+        allowed-origins: ${CORS_ALLOWED_ORIGINS}
+        allowed-methods: ${CORS_ALLOWED_METHODS:*}
+        allowed-headers: ${CORS_ALLOWED_HEADERS:*}
 coreiot:
     username: ${COREIOT_USERNAME}
     password: ${COREIOT_PASSWORD}
     url: ${COREIOT_URL:app.coreiot.io}
+
+jwt:
+    signerKey: ${JWT_SIGNER_KEY} # 32-byte key
+    valid-duration: 3600 # in second
+    refreshable-duration: 36000 # in seconds
+
+brevo:
+    api:
+        key: ${BREVO_API_KEY}
+    sender:
+        email: ${BREVO_SENDER_EMAIL}
+        name: ${BREVO_SENDER_NAME}
